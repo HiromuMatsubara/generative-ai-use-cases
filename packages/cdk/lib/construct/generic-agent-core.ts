@@ -10,7 +10,11 @@ import { CustomResource, Duration, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Repository } from 'aws-cdk-lib/aws-ecr';
-import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import {
+  DockerImageAsset,
+  NetworkMode,
+  Platform,
+} from 'aws-cdk-lib/aws-ecr-assets';
 import {
   Bucket,
   BlockPublicAccess,
@@ -34,6 +38,7 @@ export interface AgentCoreRuntimeConfig {
 export interface GenericAgentCoreProps {
   // Add any specific configuration props if needed
   env: string;
+  isSageMakerStudio: boolean;
 }
 
 // UUID for Agent Core Runtime
@@ -45,10 +50,12 @@ export class GenericAgentCore extends Construct {
   private _imageUri?: string;
   private readonly genericRuntimeConfig: AgentCoreRuntimeConfig;
   private readonly _fileBucket: Bucket;
+  private _props: GenericAgentCoreProps;
 
   constructor(scope: Construct, id: string, props: GenericAgentCoreProps) {
     super(scope, id);
 
+    this._props = props;
     const { env } = props;
 
     // Create dedicated S3 bucket for Agent Core Runtime
@@ -127,6 +134,9 @@ export class GenericAgentCore extends Construct {
       {
         directory: path.join(__dirname, `../../${dockerPath}`),
         platform: Platform.LINUX_ARM64, // AgentCore for ARM platform
+        networkMode: this._props.isSageMakerStudio
+          ? NetworkMode.custom('sagemaker')
+          : NetworkMode.DEFAULT,
       }
     );
 

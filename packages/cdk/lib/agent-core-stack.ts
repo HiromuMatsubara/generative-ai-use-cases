@@ -6,6 +6,7 @@ import { BucketInfo } from 'generative-ai-use-cases';
 
 export interface AgentCoreStackProps extends StackProps {
   readonly params: ProcessedStackInput;
+  readonly isSageMakerStudio: boolean;
 }
 
 export class AgentCoreStack extends Stack {
@@ -20,6 +21,7 @@ export class AgentCoreStack extends Stack {
     if (params.createGenericAgentCoreRuntime) {
       this.genericAgentCore = new GenericAgentCore(this, 'GenericAgentCore', {
         env: params.env,
+        isSageMakerStudio: props.isSageMakerStudio,
       });
 
       // Output the runtime ARN for cross-stack reference
