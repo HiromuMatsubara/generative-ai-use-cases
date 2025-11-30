@@ -19,7 +19,6 @@ import {
 } from '@aws-cdk/aws-bedrock-agentcore-alpha';
 import { BucketInfo } from 'generative-ai-use-cases';
 import * as path from 'path';
-import { loadMCPConfig } from '../utils/mcp-config-loader';
 import { SUPPORTED_CACHE_FIELDS } from '@generative-ai-use-cases/common';
 
 export interface AgentCoreRuntimeConfig {
@@ -85,13 +84,6 @@ export class GenericAgentCore extends Construct {
   }
 
   private loadConfigurations(env: string, bucketName: string) {
-    const genericMcpServers = loadMCPConfig(
-      path.join(__dirname, '../../assets/mcp-configs/generic.json')
-    );
-    const agentBuilderMcpServers = loadMCPConfig(
-      path.join(__dirname, '../../assets/mcp-configs/agent-builder.json')
-    );
-
     return {
       generic: {
         name: `GenUGenericRuntime${env}`,
@@ -102,7 +94,7 @@ export class GenericAgentCore extends Construct {
         serverProtocol: 'HTTP',
         environmentVariables: {
           FILE_BUCKET: bucketName,
-          MCP_SERVERS: JSON.stringify(genericMcpServers),
+          MCP_CONFIG_PATH: '/var/task/mcp-configs/generic.json',
           SUPPORTED_CACHE_FIELDS: JSON.stringify(SUPPORTED_CACHE_FIELDS),
         },
       },
@@ -116,7 +108,7 @@ export class GenericAgentCore extends Construct {
         serverProtocol: 'HTTP',
         environmentVariables: {
           FILE_BUCKET: bucketName,
-          MCP_SERVERS: JSON.stringify(agentBuilderMcpServers),
+          MCP_CONFIG_PATH: '/var/task/mcp-configs/agent-builder.json',
           SUPPORTED_CACHE_FIELDS: JSON.stringify(SUPPORTED_CACHE_FIELDS),
         },
       },
