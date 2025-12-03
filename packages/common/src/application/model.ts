@@ -292,8 +292,9 @@ export const modelMetadata: Record<string, ModelMetadata> = {
     displayName: 'Nova Micro',
   },
   'us.amazon.nova-2-lite-v1:0': {
+    // TODO: Enable Reasoning
     flags: {
-      ...MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+      ...MODEL_FEATURE.TEXT_DOC_IMAGE,
       ...MODEL_FEATURE.LIGHT,
     },
     displayName: 'Nova Lite 2',
@@ -335,15 +336,17 @@ export const modelMetadata: Record<string, ModelMetadata> = {
     displayName: 'Nova Micro',
   },
   'jp.amazon.nova-2-lite-v1:0': {
+    // TODO: Enable Reasoning
     flags: {
-      ...MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+      ...MODEL_FEATURE.TEXT_DOC_IMAGE,
       ...MODEL_FEATURE.LIGHT,
     },
     displayName: 'Nova Lite 2',
   },
   'global.amazon.nova-2-lite-v1:0': {
+    // TODO: Enable Reasoning
     flags: {
-      ...MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+      ...MODEL_FEATURE.TEXT_DOC_IMAGE,
       ...MODEL_FEATURE.LIGHT,
     },
     displayName: 'Nova Lite 2',
@@ -427,7 +430,7 @@ export const modelMetadata: Record<string, ModelMetadata> = {
     displayName: 'Pixtral Large (25.02)',
   },
   'mistral.mistral-large-3-675b-instruct': {
-    flags: MODEL_FEATURE.TEXT_IMAGE,
+    flags: MODEL_FEATURE.TEXT_ONLY,
     displayName: 'Mistral Large 3',
   },
   'mistral.ministral-3-3b-instruct': {
@@ -483,11 +486,13 @@ export const modelMetadata: Record<string, ModelMetadata> = {
     displayName: 'Qwen3-Coder 30B A3B Instruct',
   },
   'qwen.qwen3-next-80b-a3b': {
-    flags: MODEL_FEATURE.TEXT_REASONING,
+    // TODO: Enable Reasoning
+    flags: MODEL_FEATURE.TEXT_ONLY,
     displayName: 'Qwen3 Next 80B A3B',
   },
   'qwen.qwen3-vl-235b-a22b': {
-    flags: MODEL_FEATURE.TEXT_IMAGE_REASONING,
+    // TODO: Enable Reasoning
+    flags: MODEL_FEATURE.TEXT_IMAGE,
     displayName: 'Qwen3 VL 235B A22B',
   },
   // Writer
