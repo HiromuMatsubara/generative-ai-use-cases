@@ -490,6 +490,7 @@ meetingMinutes:
   style: 会议纪要风格
   style_custom: 自定义
   style_detail: 详细
+  style_diagram: 图解
   style_faq: 常见问题
   style_newspaper: 新闻报道
   style_summary: 摘要

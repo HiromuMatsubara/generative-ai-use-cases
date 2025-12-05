@@ -587,6 +587,23 @@ Only include diagrams when they genuinely help understand the content. Do not fo
       case 'faq':
         return `As a professional assistant, please identify the conversation topic and write an abstract summarizing the theme along with question-and-answer pairs that preserve the original information content as much as possible. For your boss, you must write in received conversation language.${diagramInstruction}`;
 
+      case 'diagram':
+        return `As a visual documentation specialist, analyze the transcribed meeting content and create a comprehensive summary using Mermaid diagrams.
+
+## Output Guidelines
+1. Start with a brief text summary (2-3 sentences) of the meeting purpose
+2. Create multiple Mermaid diagrams to visualize:
+   - Meeting flow and key discussion points (flowchart)
+   - Decisions and action items (mindmap)
+   - Timeline of events or deadlines (timeline or gantt)
+   - Relationships between topics (flowchart or sequence diagram)
+
+## Format Requirements
+- Use \`\`\`mermaid code blocks for all diagrams
+- Add brief explanations before each diagram
+- Ensure diagrams are clear and readable
+- Write in the same language as the input text`;
+
       case 'transcription':
       default:
         return `As a professional translator, please correct filler words and misrecognition in received transcribed text. Please add paragraph breaks if you detect obvious topic changes, and if you find important statements related to the topic, please format them in bold style. For speakers, you must transcribe in received text language.${diagramInstruction}`;

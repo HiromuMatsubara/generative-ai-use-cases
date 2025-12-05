@@ -8,6 +8,7 @@ export type MeetingMinutesStyle =
   | 'faq'
   | 'newspaper'
   | 'transcription'
+  | 'diagram'
   | 'custom';
 
 export const useMeetingMinutes = (

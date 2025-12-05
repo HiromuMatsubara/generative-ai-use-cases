@@ -66,7 +66,7 @@ export type DiagramParams = {
 };
 
 export type MeetingMinutesParams = {
-  style: 'transcription' | 'newspaper' | 'faq' | 'custom';
+  style: 'transcription' | 'newspaper' | 'faq' | 'diagram' | 'custom';
   customPrompt?: string;
 };
 

@@ -452,6 +452,7 @@ meetingMinutes:
   style: 회의록 스타일
   style_custom: 사용자 정의
   style_detail: 세부사항
+  style_diagram: 다이어그램
   style_faq: FAQ
   style_newspaper: 신문
   style_summary: 요약

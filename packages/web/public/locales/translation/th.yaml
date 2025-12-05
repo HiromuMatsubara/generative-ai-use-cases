@@ -602,6 +602,7 @@ meetingMinutes:
   style: รูปแบบรายงานการประชุม
   style_custom: กำหนดเอง
   style_detail: รายละเอียด
+  style_diagram: ไดอะแกรม
   style_faq: คำถามที่พบบ่อย
   style_newspaper: หนังสือพิมพ์
   style_summary: สรุป

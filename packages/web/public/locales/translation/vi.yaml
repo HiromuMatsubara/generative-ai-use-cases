@@ -586,6 +586,7 @@ meetingMinutes:
   style: Kiểu biên bản
   style_custom: Tùy chỉnh
   style_detail: Chi tiết
+  style_diagram: Sơ đồ
   style_faq: FAQ
   style_newspaper: Báo chí
   style_summary: Tóm tắt

@@ -218,12 +218,16 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
                       label: t('meetingMinutes.style_faq'),
                     },
                     {
-                      value: 'summary',
-                      label: t('meetingMinutes.style_summary'),
+                      value: 'newspaper',
+                      label: t('meetingMinutes.style_newspaper'),
                     },
                     {
-                      value: 'detail',
-                      label: t('meetingMinutes.style_detail'),
+                      value: 'transcription',
+                      label: t('meetingMinutes.style_transcription'),
+                    },
+                    {
+                      value: 'diagram',
+                      label: t('meetingMinutes.style_diagram'),
                     },
                     {
                       value: 'custom',

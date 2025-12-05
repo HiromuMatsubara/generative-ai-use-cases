@@ -698,6 +698,7 @@ meetingMinutes:
   style: 議事録スタイル
   style_custom: カスタム
   style_detail: 詳細
+  style_diagram: 図解
   style_faq: 質疑応答
   style_newspaper: 新聞
   style_summary: 要約
