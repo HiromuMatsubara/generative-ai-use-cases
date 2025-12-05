@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, useCallback } from 'react';
+import React, { useEffect, useState, memo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VscCode } from 'react-icons/vsc';
 import { LuNetwork } from 'react-icons/lu';
@@ -80,13 +80,40 @@ interface MermaidWithToggleProps {
 export const MermaidWithToggle = memo(
   ({ code, editable = false, onCodeChange }: MermaidWithToggleProps) => {
     const { t } = useTranslation();
-    const [viewMode, setViewMode] = useState<'diagram' | 'code'>('diagram');
+    // Start with 'code' view during streaming, auto-switch to 'diagram' when stable
+    const [viewMode, setViewMode] = useState<'diagram' | 'code'>('code');
     const [zoom, setZoom] = useState(false);
     const [editedCode, setEditedCode] = useState(code);
+    const prevCodeRef = useRef(code);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     // Sync editedCode when code prop changes
     useEffect(() => {
       setEditedCode(code);
+    }, [code]);
+
+    // Auto-switch to diagram view when code becomes stable (no changes for 500ms)
+    useEffect(() => {
+      // If code has changed
+      if (code !== prevCodeRef.current) {
+        prevCodeRef.current = code;
+
+        // Clear existing timer
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        // If no changes for 500ms, consider it stable and switch to diagram
+        timerRef.current = setTimeout(() => {
+          setViewMode('diagram');
+        }, 500);
+      }
+
+      return () => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+      };
     }, [code]);
 
     // Handle escape key for zoom
