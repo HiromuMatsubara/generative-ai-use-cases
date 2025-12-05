@@ -39,6 +39,7 @@ import { TFunction } from 'i18next';
 
 const systemContexts: { [key: string]: string } = {
   '/chat': `You are an AI assistant helping users in chat.
+When explaining processes, relationships, or structures, you can use Mermaid diagrams in code blocks (e.g., \`\`\`mermaid).
 Automatically detect the language of the user's request and think and answer in the same language.`,
   '/summarize': `You are an AI assistant that summarizes text. 
 I will give you summarization instructions in the first chat, and then you should improve the summary results in subsequent chats.
