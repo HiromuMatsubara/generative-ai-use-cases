@@ -1,18 +1,11 @@
 import { useState, useCallback } from 'react';
 import useChatApi from './useChatApi';
 import { MODELS } from './useModel';
-import { getPrompter } from '../prompts';
+import { getPrompter, MeetingMinutesParams } from '../prompts';
 import { UnrecordedMessage, Model } from 'generative-ai-use-cases';
 
-export type MeetingMinutesStyle =
-  | 'faq'
-  | 'newspaper'
-  | 'transcription'
-  | 'diagram'
-  | 'custom';
-
 export const useMeetingMinutes = (
-  minutesStyle: MeetingMinutesStyle,
+  minutesStyle: MeetingMinutesParams['style'],
   customPrompt: string,
   autoGenerateSessionTimestamp: number | null,
   setGeneratedMinutes: (minutes: string) => void,

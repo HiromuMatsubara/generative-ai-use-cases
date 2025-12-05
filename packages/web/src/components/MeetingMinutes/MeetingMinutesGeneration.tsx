@@ -13,10 +13,9 @@ import Select from '../Select';
 import Switch from '../Switch';
 import Textarea from '../Textarea';
 import Markdown from '../Markdown';
-import useMeetingMinutes, {
-  MeetingMinutesStyle,
-} from '../../hooks/useMeetingMinutes';
+import useMeetingMinutes from '../../hooks/useMeetingMinutes';
 import { MODELS } from '../../hooks/useModel';
+import { MeetingMinutesParams } from '../../prompts';
 
 interface MeetingMinutesGenerationProps {
   /** Current transcript text to generate minutes from */
@@ -31,7 +30,8 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
   const shouldGenerateRef = useRef<boolean>(false);
 
   // Internal state management
-  const [minutesStyle, setMinutesStyle] = useState<MeetingMinutesStyle>('faq');
+  const [minutesStyle, setMinutesStyle] =
+    useState<MeetingMinutesParams['style']>('summary');
   const [customPrompt, setCustomPrompt] = useState('');
   const [autoGenerate, setAutoGenerate] = useState(false);
   const [generationFrequency, setGenerationFrequency] = useState(5);
@@ -176,12 +176,16 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
               }
               options={[
                 {
-                  value: 'faq',
-                  label: t('meetingMinutes.style_faq'),
+                  value: 'summary',
+                  label: t('meetingMinutes.style_summary'),
                 },
                 {
-                  value: 'newspaper',
-                  label: t('meetingMinutes.style_newspaper'),
+                  value: 'detail',
+                  label: t('meetingMinutes.style_detail'),
+                },
+                {
+                  value: 'faq',
+                  label: t('meetingMinutes.style_faq'),
                 },
                 {
                   value: 'transcription',
@@ -190,6 +194,10 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
                 {
                   value: 'diagram',
                   label: t('meetingMinutes.style_diagram'),
+                },
+                {
+                  value: 'newspaper',
+                  label: t('meetingMinutes.style_newspaper'),
                 },
                 {
                   value: 'custom',
