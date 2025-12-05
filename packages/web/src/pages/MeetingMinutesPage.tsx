@@ -123,6 +123,21 @@ const MeetingMinutesPage: React.FC = () => {
     []
   );
 
+  // Memoized callback for recording state changes (prevents infinite loop)
+  const handleTranscriptionRecordingStateChange = useCallback(
+    (state: { micRecording: boolean; screenRecording: boolean }) => {
+      setTranscriptionRecording(state);
+    },
+    []
+  );
+
+  const handleRealtimeTranslationRecordingStateChange = useCallback(
+    (state: { micRecording: boolean; screenRecording: boolean }) => {
+      setRealtimeTranslationRecording(state);
+    },
+    []
+  );
+
   // Get current transcript text
   const currentTranscriptText = transcriptTexts[inputMethod];
 
@@ -205,8 +220,8 @@ const MeetingMinutesPage: React.FC = () => {
                 }}>
                 <MeetingMinutesTranscription
                   onTranscriptChange={handleTranscriptionTranscriptChange}
-                  onRecordingStateChange={(state) =>
-                    setTranscriptionRecording(state)
+                  onRecordingStateChange={
+                    handleTranscriptionRecordingStateChange
                   }
                 />
               </div>
@@ -217,8 +232,8 @@ const MeetingMinutesPage: React.FC = () => {
                 }}>
                 <MeetingMinutesRealtimeTranslation
                   onTranscriptChange={handleRealtimeTranslationTranscriptChange}
-                  onRecordingStateChange={(state) =>
-                    setRealtimeTranslationRecording(state)
+                  onRecordingStateChange={
+                    handleRealtimeTranslationRecordingStateChange
                   }
                 />
               </div>
