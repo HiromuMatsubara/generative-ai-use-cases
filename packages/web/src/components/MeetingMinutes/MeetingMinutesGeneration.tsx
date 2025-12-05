@@ -11,12 +11,8 @@ import { PiGearSix } from 'react-icons/pi';
 import Button from '../Button';
 import ButtonCopy from '../ButtonCopy';
 import ButtonIcon from '../ButtonIcon';
-import Checkbox from '../Checkbox';
-import ModalDialog from '../ModalDialog';
-import Select from '../Select';
-import Switch from '../Switch';
-import Textarea from '../Textarea';
 import Markdown from '../Markdown';
+import MeetingMinutesSettingsModal from './MeetingMinutesSettingsModal';
 import useMeetingMinutes from '../../hooks/useMeetingMinutes';
 import { MODELS } from '../../hooks/useModel';
 import { MeetingMinutesParams, DiagramOption } from '../../prompts';
@@ -270,152 +266,24 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
       </div>
 
       {/* Settings Modal */}
-      <ModalDialog
+      <MeetingMinutesSettingsModal
         isOpen={isSettingsOpen}
-        title={t('meetingMinutes.settings')}
-        onClose={() => setIsSettingsOpen(false)}>
-        <div className="space-y-4">
-          {/* Style selection */}
-          <div>
-            <label className="mb-2 block font-bold">
-              {t('meetingMinutes.style')}
-            </label>
-            <Select
-              value={minutesStyle}
-              onChange={(value) =>
-                setMinutesStyle(value as typeof minutesStyle)
-              }
-              options={[
-                {
-                  value: 'summary',
-                  label: t('meetingMinutes.style_summary'),
-                },
-                {
-                  value: 'detail',
-                  label: t('meetingMinutes.style_detail'),
-                },
-                {
-                  value: 'faq',
-                  label: t('meetingMinutes.style_faq'),
-                },
-                {
-                  value: 'transcription',
-                  label: t('meetingMinutes.style_transcription'),
-                },
-                {
-                  value: 'diagram',
-                  label: t('meetingMinutes.style_diagram'),
-                },
-                {
-                  value: 'newspaper',
-                  label: t('meetingMinutes.style_newspaper'),
-                },
-                {
-                  value: 'custom',
-                  label: t('meetingMinutes.style_custom'),
-                },
-              ]}
-            />
-          </div>
-
-          {/* Model selection */}
-          <div>
-            <label className="mb-2 block font-bold">
-              {t('meetingMinutes.model')}
-            </label>
-            <Select
-              value={modelId}
-              onChange={setModelId}
-              options={availableModels.map((id) => ({
-                value: id,
-                label: modelDisplayName(id),
-              }))}
-            />
-          </div>
-
-          {/* Custom prompt (when style is 'custom') */}
-          {minutesStyle === 'custom' && (
-            <div>
-              <label className="mb-1 block text-sm font-bold">
-                {t('meetingMinutes.custom_prompt')}
-              </label>
-              <Textarea
-                placeholder={t('meetingMinutes.custom_prompt_placeholder')}
-                value={customPrompt}
-                onChange={setCustomPrompt}
-                maxHeight={120}
-              />
-            </div>
-          )}
-
-          {/* Diagram options (when style is 'diagram') */}
-          {minutesStyle === 'diagram' && (
-            <div>
-              <label className="mb-2 block text-sm font-bold">
-                {t('meetingMinutes.diagram_options')}
-              </label>
-              <div className="flex flex-wrap gap-x-4 gap-y-2">
-                <Checkbox
-                  label={t('meetingMinutes.diagram_mindmap')}
-                  value={diagramOptions.includes('mindmap')}
-                  onChange={() => toggleDiagramOption('mindmap')}
-                />
-                <Checkbox
-                  label={t('meetingMinutes.diagram_flowchart')}
-                  value={diagramOptions.includes('flowchart')}
-                  onChange={() => toggleDiagramOption('flowchart')}
-                />
-                <Checkbox
-                  label={t('meetingMinutes.diagram_timeline')}
-                  value={diagramOptions.includes('timeline')}
-                  onChange={() => toggleDiagramOption('timeline')}
-                />
-                <Checkbox
-                  label={t('meetingMinutes.diagram_sequence')}
-                  value={diagramOptions.includes('sequence')}
-                  onChange={() => toggleDiagramOption('sequence')}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Auto-generation controls */}
-          <div className="border-t pt-4">
-            <Switch
-              label={t('meetingMinutes.auto_generate')}
-              checked={autoGenerate}
-              onSwitch={setAutoGenerate}
-            />
-            {autoGenerate && (
-              <div className="mt-3">
-                <label className="mb-1 block text-sm font-bold">
-                  {t('meetingMinutes.generation_frequency')}
-                </label>
-                <Select
-                  value={generationFrequency.toString()}
-                  onChange={(value) => setGenerationFrequency(Number(value))}
-                  options={[
-                    { value: '1', label: t('meetingMinutes.frequency_1min') },
-                    { value: '3', label: t('meetingMinutes.frequency_3min') },
-                    { value: '5', label: t('meetingMinutes.frequency_5min') },
-                    {
-                      value: '10',
-                      label: t('meetingMinutes.frequency_10min'),
-                    },
-                  ]}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Close button */}
-          <div className="flex justify-end border-t pt-4">
-            <Button onClick={() => setIsSettingsOpen(false)}>
-              {t('common.close')}
-            </Button>
-          </div>
-        </div>
-      </ModalDialog>
+        onClose={() => setIsSettingsOpen(false)}
+        minutesStyle={minutesStyle}
+        setMinutesStyle={setMinutesStyle}
+        modelId={modelId}
+        setModelId={setModelId}
+        availableModels={availableModels}
+        modelDisplayName={modelDisplayName}
+        customPrompt={customPrompt}
+        setCustomPrompt={setCustomPrompt}
+        diagramOptions={diagramOptions}
+        toggleDiagramOption={toggleDiagramOption}
+        autoGenerate={autoGenerate}
+        setAutoGenerate={setAutoGenerate}
+        generationFrequency={generationFrequency}
+        setGenerationFrequency={setGenerationFrequency}
+      />
     </div>
   );
 };
