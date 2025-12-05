@@ -579,6 +579,7 @@ meetingMinutes:
   generating: กำลังสร้างรายงานการประชุม...
   generation_error: ไม่สามารถสร้างรายงานการประชุมได้ กรุณาลองอีกครั้ง
   generation_frequency: ความถี่ในการสร้าง
+  generation_panel: สร้างรายงานการประชุม
   generation_success: สร้างรายงานการประชุมสำเร็จ
   language: ภาษาการถอดเสียง
   language_auto: ตรวจจับอัตโนมัติ
@@ -609,6 +610,7 @@ meetingMinutes:
   style_transcription: การถอดความ
   title: ตัวสร้างรายงานการประชุม
   transcript: บันทึกการถอดความ
+  transcription_panel: ถอดความ
 model:
   parameters:
     reasoning_budget: งบประมาณการให้เหตุผล

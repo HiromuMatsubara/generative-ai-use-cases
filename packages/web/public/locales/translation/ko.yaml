@@ -429,6 +429,7 @@ meetingMinutes:
   generating: 회의록 생성 중...
   generation_error: 회의록 생성에 실패했습니다. 다시 시도해주세요.
   generation_frequency: 생성 빈도
+  generation_panel: 회의록 생성
   generation_success: 회의록이 성공적으로 생성되었습니다
   language: 전사 언어
   language_auto: 자동 감지
@@ -459,6 +460,7 @@ meetingMinutes:
   style_transcription: 전사
   title: 회의록 생성기
   transcript: 전사
+  transcription_panel: 전사
 model:
   parameters:
     reasoning: 추론

@@ -813,6 +813,7 @@ mcp_chat:
 meetingMinutes:
   auto_generate: Auto Generate
   bidirectional: Bidirectional Translation
+  both_panel: Both Panels
   clear_minutes: Clear Minutes
   custom_prompt: Custom Prompt
   custom_prompt_placeholder: Enter your custom prompt for generating meeting minutes...
@@ -827,6 +828,7 @@ meetingMinutes:
   generating: Generating minutes...
   generation_error: Failed to generate meeting minutes. Please try again.
   generation_frequency: Generation Frequency
+  generation_panel: Generate Minutes
   generation_success: Meeting minutes generated successfully
   language: Transcription Language
   language_1: Language 1
@@ -861,6 +863,7 @@ meetingMinutes:
   title: Meeting Minutes Generator
   transcript: Transcript
   transcription_language: Transcription Language
+  transcription_panel: Transcription
   translation_language: Translation Language
   translation_model: Real-time Translation Model
   translation_type: Translation Type

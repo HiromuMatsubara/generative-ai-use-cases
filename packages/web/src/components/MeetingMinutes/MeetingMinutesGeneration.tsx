@@ -6,17 +6,13 @@ import React, {
   useEffect,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import queryString from 'query-string';
 import Button from '../Button';
 import ButtonCopy from '../ButtonCopy';
-import ButtonIcon from '../ButtonIcon';
 import Select from '../Select';
 import Switch from '../Switch';
 import Textarea from '../Textarea';
 import Markdown from '../Markdown';
-import { PiPencilLine, PiCaretRight, PiCaretLeft } from 'react-icons/pi';
 import useMeetingMinutes, {
   MeetingMinutesStyle,
 } from '../../hooks/useMeetingMinutes';
@@ -25,19 +21,12 @@ import { MODELS } from '../../hooks/useModel';
 interface MeetingMinutesGenerationProps {
   /** Current transcript text to generate minutes from */
   transcriptText: string;
-  /** Whether the panel is collapsed */
-  isCollapsed: boolean;
-  /** Handler for toggle collapse state */
-  onToggleCollapse: () => void;
 }
 
 const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
   transcriptText,
-  isCollapsed,
-  onToggleCollapse,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const shouldGenerateRef = useRef<boolean>(false);
 
@@ -172,184 +161,146 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
   }, [clearMinutes]);
 
   return (
-    <div
-      className={`overflow-hidden transition-all duration-500 ease-in-out ${
-        isCollapsed ? 'max-h-16' : 'min-h-96'
-      }`}>
-      {isCollapsed ? (
-        // Collapsed UI
-        <div className="p-0 transition-opacity duration-200 lg:p-0">
-          <div className="flex justify-center">
-            <button
-              className="inline-flex items-center rounded-md bg-white px-0.5 py-0.5 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-              onClick={onToggleCollapse}>
-              <PiCaretLeft className="h-3 w-3 xl:mr-0" />
-            </button>
+    <div className="flex h-full flex-col overflow-hidden">
+      {/* Meeting Minutes Configuration */}
+      <div className="mb-3 shrink-0">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-2 block font-bold">
+              {t('meetingMinutes.style')}
+            </label>
+            <Select
+              value={minutesStyle}
+              onChange={(value) =>
+                setMinutesStyle(value as typeof minutesStyle)
+              }
+              options={[
+                {
+                  value: 'faq',
+                  label: t('meetingMinutes.style_faq'),
+                },
+                {
+                  value: 'newspaper',
+                  label: t('meetingMinutes.style_newspaper'),
+                },
+                {
+                  value: 'transcription',
+                  label: t('meetingMinutes.style_transcription'),
+                },
+                {
+                  value: 'diagram',
+                  label: t('meetingMinutes.style_diagram'),
+                },
+                {
+                  value: 'custom',
+                  label: t('meetingMinutes.style_custom'),
+                },
+              ]}
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-bold">
+              {t('meetingMinutes.model')}
+            </label>
+            <Select
+              value={modelId}
+              onChange={setModelId}
+              options={availableModels.map((id) => ({
+                value: id,
+                label: modelDisplayName(id),
+              }))}
+            />
           </div>
         </div>
-      ) : (
-        // Expanded UI
-        <div className="transition-opacity duration-200">
-          {/* Header with collapse button */}
-          <div className="mb-4">
-            <button
-              className="mb-2 flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-              onClick={onToggleCollapse}>
-              <PiCaretRight className="mr-2 h-4 w-4" />
-              {t('common.collapse')}
-            </button>
+
+        {minutesStyle === 'custom' && (
+          <div className="mt-3">
+            <label className="mb-1 block text-sm font-bold">
+              {t('meetingMinutes.custom_prompt')}
+            </label>
+            <Textarea
+              placeholder={t('meetingMinutes.custom_prompt_placeholder')}
+              value={customPrompt}
+              onChange={setCustomPrompt}
+              maxHeight={60}
+            />
           </div>
+        )}
 
-          {/* Meeting Minutes Configuration */}
-          <div className="mb-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-2 block font-bold">
-                  {t('meetingMinutes.style')}
-                </label>
-                <Select
-                  value={minutesStyle}
-                  onChange={(value) =>
-                    setMinutesStyle(value as typeof minutesStyle)
-                  }
-                  options={[
-                    {
-                      value: 'faq',
-                      label: t('meetingMinutes.style_faq'),
-                    },
-                    {
-                      value: 'newspaper',
-                      label: t('meetingMinutes.style_newspaper'),
-                    },
-                    {
-                      value: 'transcription',
-                      label: t('meetingMinutes.style_transcription'),
-                    },
-                    {
-                      value: 'diagram',
-                      label: t('meetingMinutes.style_diagram'),
-                    },
-                    {
-                      value: 'custom',
-                      label: t('meetingMinutes.style_custom'),
-                    },
-                  ]}
-                />
-              </div>
-
-              <div>
-                <label className="mb-2 block font-bold">
-                  {t('meetingMinutes.model')}
-                </label>
-                <Select
-                  value={modelId}
-                  onChange={setModelId}
-                  options={availableModels.map((id) => ({
-                    value: id,
-                    label: modelDisplayName(id),
-                  }))}
-                />
-              </div>
-            </div>
-
-            {minutesStyle === 'custom' && (
-              <div className="mb-4">
-                <label className="mb-2 block font-bold">
-                  {t('meetingMinutes.custom_prompt')}
-                </label>
-                <Textarea
-                  placeholder={t('meetingMinutes.custom_prompt_placeholder')}
-                  value={customPrompt}
-                  onChange={setCustomPrompt}
-                  maxHeight={80}
-                />
-              </div>
-            )}
-
-            {/* Auto-generation controls */}
-            <div className="mb-4">
-              <Switch
-                label={t('meetingMinutes.auto_generate')}
-                checked={autoGenerate}
-                onSwitch={setAutoGenerate}
+        {/* Auto-generation controls */}
+        <div className="mt-3">
+          <Switch
+            label={t('meetingMinutes.auto_generate')}
+            checked={autoGenerate}
+            onSwitch={setAutoGenerate}
+          />
+          {autoGenerate && (
+            <div className="mt-2">
+              <label className="mb-1 block text-sm font-bold">
+                {t('meetingMinutes.generation_frequency')}
+              </label>
+              <Select
+                value={generationFrequency.toString()}
+                onChange={(value) => setGenerationFrequency(Number(value))}
+                options={[
+                  { value: '1', label: t('meetingMinutes.frequency_1min') },
+                  { value: '3', label: t('meetingMinutes.frequency_3min') },
+                  { value: '5', label: t('meetingMinutes.frequency_5min') },
+                  {
+                    value: '10',
+                    label: t('meetingMinutes.frequency_10min'),
+                  },
+                ]}
               />
-              {autoGenerate && (
-                <div className="mt-2">
-                  <label className="mb-2 block font-bold">
-                    {t('meetingMinutes.generation_frequency')}
-                  </label>
-                  <Select
-                    value={generationFrequency.toString()}
-                    onChange={(value) => setGenerationFrequency(Number(value))}
-                    options={[
-                      { value: '1', label: t('meetingMinutes.frequency_1min') },
-                      { value: '3', label: t('meetingMinutes.frequency_3min') },
-                      { value: '5', label: t('meetingMinutes.frequency_5min') },
-                      {
-                        value: '10',
-                        label: t('meetingMinutes.frequency_10min'),
-                      },
-                    ]}
-                  />
-                  {countdownSeconds > 0 && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      {t('meetingMinutes.next_generation')}
-                      {t('common.colon')} {Math.floor(countdownSeconds / 60)}
-                      {t('common.colon')}
-                      {(countdownSeconds % 60).toString().padStart(2, '0')}
-                    </div>
-                  )}
+              {countdownSeconds > 0 && (
+                <div className="mt-2 text-sm text-gray-600">
+                  {t('meetingMinutes.next_generation')}
+                  {t('common.colon')} {Math.floor(countdownSeconds / 60)}
+                  {t('common.colon')}
+                  {(countdownSeconds % 60).toString().padStart(2, '0')}
                 </div>
               )}
             </div>
-          </div>
+          )}
+        </div>
+      </div>
 
-          {/* Generation buttons */}
-          <div className="mb-4 flex gap-2">
-            <Button
-              disabled={!hasTranscriptText || minutesLoading}
-              onClick={handleManualGeneration}
-              loading={minutesLoading}>
-              {t('meetingMinutes.generate')}
-            </Button>
-            <Button outlined onClick={handleClearMinutes}>
-              {t('meetingMinutes.clear_minutes')}
-            </Button>
-          </div>
+      {/* Generation buttons */}
+      <div className="mb-3 flex shrink-0 gap-2">
+        <Button
+          disabled={!hasTranscriptText || minutesLoading}
+          onClick={handleManualGeneration}
+          loading={minutesLoading}>
+          {t('meetingMinutes.generate')}
+        </Button>
+        <Button outlined onClick={handleClearMinutes}>
+          {t('meetingMinutes.clear_minutes')}
+        </Button>
+      </div>
 
-          {/* Generated minutes display */}
+      {/* Generated minutes display */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="mb-2 flex shrink-0 items-center justify-between">
+          <div className="font-bold">
+            {t('meetingMinutes.generated_minutes')}
+          </div>
           {generatedMinutes && (
-            <div className="mb-4">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="font-bold">
-                    {t('meetingMinutes.generated_minutes')}
-                  </div>
-                </div>
-                <div className="flex">
-                  <ButtonCopy
-                    text={generatedMinutes}
-                    interUseCasesKey="minutes"
-                  />
-                  <ButtonIcon
-                    onClick={() => {
-                      navigate(
-                        `/edit?${queryString.stringify({
-                          content: generatedMinutes,
-                        })}`
-                      );
-                    }}>
-                    <PiPencilLine />
-                  </ButtonIcon>
-                </div>
-              </div>
-              <div className="max-h-96 overflow-y-auto overflow-x-hidden rounded border border-black/30 p-3">
-                <Markdown>{generatedMinutes}</Markdown>
-              </div>
+            <div className="flex">
+              <ButtonCopy text={generatedMinutes} interUseCasesKey="minutes" />
             </div>
           )}
         </div>
-      )}
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden rounded border border-black/30 p-3">
+          {generatedMinutes ? (
+            <Markdown>{generatedMinutes}</Markdown>
+          ) : (
+            <div className="flex h-full items-center justify-center text-gray-400">
+              {t('meetingMinutes.minutes_placeholder')}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

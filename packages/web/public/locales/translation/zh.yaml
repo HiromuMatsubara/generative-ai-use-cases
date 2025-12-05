@@ -467,6 +467,7 @@ meetingMinutes:
   generating: 正在生成会议纪要...
   generation_error: 会议纪要生成失败。请重试。
   generation_frequency: 生成频率
+  generation_panel: 生成会议纪要
   generation_success: 会议纪要生成成功
   language: 语音识别语言
   language_auto: 自动检测
@@ -497,6 +498,7 @@ meetingMinutes:
   style_transcription: 转录
   title: 会议纪要生成器
   transcript: 转录文本
+  transcription_panel: 转录文本
 model:
   parameters:
     reasoning_budget: 推理预算

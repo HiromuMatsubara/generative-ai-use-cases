@@ -658,6 +658,7 @@ mcp_chat:
 meetingMinutes:
   auto_generate: 自動生成
   bidirectional: 双方向翻訳
+  both_panel: 両方表示
   clear_minutes: 議事録をクリア
   custom_prompt: カスタムプロンプト
   custom_prompt_placeholder: 議事録生成用のカスタムプロンプトを入力してください...
@@ -673,6 +674,7 @@ meetingMinutes:
   generating: 議事録生成中...
   generation_error: 議事録の生成に失敗しました。再試行してください。
   generation_frequency: 生成頻度
+  generation_panel: 議事録生成
   generation_success: 議事録が正常に生成されました
   language: 文字起こし言語
   language_1: 言語1
@@ -707,6 +709,7 @@ meetingMinutes:
   title: 議事録生成
   transcript: 文字起こし
   transcription_language: 文字起こし言語
+  transcription_panel: 文字起こし
   translation_language: 翻訳言語
   translation_model: リアルタイム翻訳モデル
   translation_type: 翻訳方式
