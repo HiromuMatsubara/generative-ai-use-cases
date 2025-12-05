@@ -662,6 +662,11 @@ meetingMinutes:
   clear_minutes: 議事録をクリア
   custom_prompt: カスタムプロンプト
   custom_prompt_placeholder: 議事録生成用のカスタムプロンプトを入力してください...
+  diagram_flowchart: フローチャート（会議の流れ）
+  diagram_mindmap: マインドマップ（決定事項）
+  diagram_options: 生成する図の種類
+  diagram_sequence: シーケンス図（関係性）
+  diagram_timeline: タイムライン（期限・スケジュール）
   frequency: 生成頻度
   frequency_10min: 10分ごと
   frequency_1min: 1分ごと
@@ -696,6 +701,7 @@ meetingMinutes:
   partial_indicator: (...)
   record_transcribe: 音声認識
   screen_audio_error: スクリーン音声エラー
+  settings: 設定
   speech_recognition: 音声認識
   style: 議事録スタイル
   style_custom: カスタム

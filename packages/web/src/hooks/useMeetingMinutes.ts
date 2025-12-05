@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import useChatApi from './useChatApi';
 import { MODELS } from './useModel';
-import { getPrompter, MeetingMinutesParams } from '../prompts';
+import { getPrompter, MeetingMinutesParams, DiagramOption } from '../prompts';
 import { UnrecordedMessage, Model } from 'generative-ai-use-cases';
 
 export const useMeetingMinutes = (
@@ -10,7 +10,8 @@ export const useMeetingMinutes = (
   autoGenerateSessionTimestamp: number | null,
   setGeneratedMinutes: (minutes: string) => void,
   setLastProcessedTranscript: (transcript: string) => void,
-  setLastGeneratedTime: (time: Date | null) => void
+  setLastGeneratedTime: (time: Date | null) => void,
+  diagramOptions?: DiagramOption[]
 ) => {
   const { predictStream } = useChatApi();
   const { modelIds: availableModels, textModels } = MODELS;
@@ -25,7 +26,8 @@ export const useMeetingMinutes = (
       onGenerate?: (
         status: 'generating' | 'success' | 'error',
         data?: { message?: string; minutes?: string }
-      ) => void
+      ) => void,
+      existingMinutes?: string
     ) => {
       if (!transcript || transcript.trim() === '') return;
 
@@ -47,6 +49,7 @@ export const useMeetingMinutes = (
             : prompter.meetingMinutesPrompt({
                 style: minutesStyle,
                 customPrompt,
+                diagramOptions,
               });
 
         const messages: UnrecordedMessage[] = [
@@ -67,7 +70,12 @@ export const useMeetingMinutes = (
         });
 
         let fullResponse = '';
-        setGeneratedMinutes('');
+        const hasExisting = existingMinutes && existingMinutes.trim() !== '';
+
+        // Only clear if no existing text (first generation)
+        if (!hasExisting) {
+          setGeneratedMinutes('');
+        }
 
         for await (const chunk of stream) {
           if (chunk) {
@@ -79,7 +87,10 @@ export const useMeetingMinutes = (
                   const payload = JSON.parse(c) as { text: string };
                   if (payload.text && payload.text.length > 0) {
                     fullResponse += payload.text;
-                    setGeneratedMinutes(fullResponse);
+                    // Only update during streaming if no existing text
+                    if (!hasExisting) {
+                      setGeneratedMinutes(fullResponse);
+                    }
                   }
                 } catch (error) {
                   // Skip invalid JSON chunks
@@ -88,6 +99,11 @@ export const useMeetingMinutes = (
               }
             }
           }
+        }
+
+        // If existing text was present, update only after completion
+        if (hasExisting) {
+          setGeneratedMinutes(fullResponse);
         }
 
         setLastProcessedTranscript(transcript);
@@ -104,6 +120,7 @@ export const useMeetingMinutes = (
     [
       minutesStyle,
       customPrompt,
+      diagramOptions,
       predictStream,
       textModels,
       autoGenerateSessionTimestamp,

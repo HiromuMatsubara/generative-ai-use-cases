@@ -65,6 +65,12 @@ export type DiagramParams = {
   diagramType?: string;
 };
 
+export type DiagramOption =
+  | 'mindmap' // Decisions and action items
+  | 'flowchart' // Meeting flow and key discussion points
+  | 'timeline' // Timeline of events or deadlines
+  | 'sequence'; // Relationships between topics
+
 export type MeetingMinutesParams = {
   style:
     | 'transcription'
@@ -75,6 +81,7 @@ export type MeetingMinutesParams = {
     | 'diagram'
     | 'custom';
   customPrompt?: string;
+  diagramOptions?: DiagramOption[];
 };
 
 export type PromptListItem = {
