@@ -257,7 +257,7 @@ const MeetingMinutesPage: React.FC = () => {
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                   onClick={() => setInputMethod('transcription')}>
-                  <PiMicrophoneBold className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
+                  <PiMicrophoneBold className="h-10 w-10 sm:mr-2 sm:h-4 sm:w-4" />
                   <span className="hidden text-xs sm:inline">
                     {t('transcribe.voice_transcription')}
                   </span>
@@ -269,7 +269,7 @@ const MeetingMinutesPage: React.FC = () => {
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                   onClick={() => setInputMethod('realtime_translation')}>
-                  <PiTranslateBold className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
+                  <PiTranslateBold className="h-10 w-10 sm:mr-2 sm:h-4 sm:w-4" />
                   <span className="hidden text-xs sm:inline">
                     {t('translate.realtime_translation')}
                   </span>
@@ -281,7 +281,7 @@ const MeetingMinutesPage: React.FC = () => {
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                   onClick={() => setInputMethod('direct')}>
-                  <PiPencilLine className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
+                  <PiPencilLine className="h-10 w-10 sm:mr-2 sm:h-4 sm:w-4" />
                   <span className="hidden text-xs sm:inline">
                     {t('transcribe.direct_input')}
                   </span>
@@ -293,14 +293,14 @@ const MeetingMinutesPage: React.FC = () => {
                       : 'border-transparent text-gray-500 hover:text-gray-700'
                   }`}
                   onClick={() => setInputMethod('file')}>
-                  <PiPaperclip className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
+                  <PiPaperclip className="h-10 w-10 sm:mr-2 sm:h-4 sm:w-4" />
                   <span className="hidden text-xs sm:inline">
                     {t('transcribe.file_upload')}
                   </span>
                 </button>
               </div>
               {/* Mobile: Show selected tab label below icons */}
-              <div className="mt-1 pb-1 text-center text-sm font-medium text-blue-600 sm:hidden">
+              <div className="mt-4 pb-4 text-center text-sm font-medium text-blue-600 sm:hidden">
                 {inputMethod === 'transcription' &&
                   t('transcribe.voice_transcription')}
                 {inputMethod === 'realtime_translation' &&

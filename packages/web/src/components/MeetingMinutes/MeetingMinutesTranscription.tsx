@@ -346,7 +346,7 @@ const MeetingMinutesTranscription: React.FC<
     <div className="flex h-full flex-col">
       {/* Settings Panel */}
       {!isRecording && (
-        <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4 pb-20">
+        <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4">
           <div className="mb-3 text-sm font-bold text-gray-700">
             {t('meetingMinutes.settings')}
           </div>
@@ -432,7 +432,7 @@ const MeetingMinutesTranscription: React.FC<
             <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
               {t('meetingMinutes.language')}
             </div>
-            <div className="flex w-48 items-center">
+            <div className="w-48">
               <Select
                 value={languageCode}
                 onChange={setLanguageCode}
@@ -461,8 +461,7 @@ const MeetingMinutesTranscription: React.FC<
             {!isRecording && (
               <Button
                 className="h-8 px-3 py-1 text-sm"
-                onClick={onClickExecStartTranscription}
-                outlined>
+                onClick={onClickExecStartTranscription}>
                 <PiMicrophoneBold className="mr-1 h-4 w-4" />
                 {t('transcribe.start_recording')}
               </Button>

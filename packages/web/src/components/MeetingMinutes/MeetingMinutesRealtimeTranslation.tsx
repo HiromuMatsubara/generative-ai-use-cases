@@ -846,7 +846,7 @@ const MeetingMinutesRealtimeTranslation: React.FC<
                   ? t('meetingMinutes.language_1')
                   : t('meetingMinutes.transcription_language')}
               </div>
-              <div className="flex flex-1 items-center">
+              <div>
                 <Select
                   value={primaryLanguage}
                   onChange={setPrimaryLanguage}
@@ -862,7 +862,7 @@ const MeetingMinutesRealtimeTranslation: React.FC<
                   ? t('meetingMinutes.language_2')
                   : t('meetingMinutes.translation_language')}
               </div>
-              <div className="flex flex-1 items-center">
+              <div>
                 <Select
                   value={secondaryLanguage}
                   onChange={setSecondaryLanguage}
@@ -879,7 +879,7 @@ const MeetingMinutesRealtimeTranslation: React.FC<
             <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
               {t('meetingMinutes.translation_type')}
             </div>
-            <div className="flex flex-1 items-center">
+            <div>
               <Select
                 value={translationType}
                 onChange={setTranslationType}
@@ -895,7 +895,7 @@ const MeetingMinutesRealtimeTranslation: React.FC<
             <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
               {t('meetingMinutes.translation_model')}
             </div>
-            <div className="flex flex-1 items-center">
+            <div>
               <Select
                 value={selectedTranslationModel}
                 onChange={setSelectedTranslationModel}
