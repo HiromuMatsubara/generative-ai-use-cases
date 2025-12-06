@@ -681,6 +681,7 @@ meetingMinutes:
   generation_frequency: 生成頻度
   generation_panel: 議事録生成
   generation_success: 議事録が正常に生成されました
+  input_source: 入力ソース
   language: 文字起こし言語
   language_1: 言語1
   language_2: 言語2
@@ -692,12 +693,14 @@ meetingMinutes:
   language_thai: タイ語
   language_vietnamese: ベトナム語
   last_generated: 最後の生成時刻 {{time}}
+  microphone: マイク
   minutes_placeholder: 生成後にここに議事録が表示されます
   model: 議事録生成モデル
   new_recording_session: 新しい録音セッション
   next_generation: 次回生成
   next_generation_in: '次回生成まで : '
   no_transcript: 文字起こしがありません
+  option: オプション
   partial_indicator: (...)
   record_transcribe: 音声認識
   screen_audio_error: スクリーン音声エラー
@@ -717,7 +720,7 @@ meetingMinutes:
   transcription_language: 文字起こし言語
   transcription_panel: 文字起こし
   translation_language: 翻訳言語
-  translation_model: リアルタイム翻訳モデル
+  translation_model: 翻訳モデル
   translation_type: 翻訳方式
   unidirectional: 片方向翻訳
 model:
@@ -857,7 +860,7 @@ transcribe:
   result_placeholder: 音声認識結果がここに表示されます
   screen_audio: スクリーン音声
   screen_audio_error: スクリーン音声エラー
-  screen_audio_notice: 'Windows の場合:「画面全体」タブより、「システム音声も共有する」を ON にしてください。<br/>Mac の場合:「Chrome Tab」から、「Also share tab audio」を ON にしてください。<br/>Chrome と Edge は動作します。Firefox は動作しません。'
+  screen_audio_notice: 'Windows の場合:「画面全体」タブより、「システム音声も共有する」を ON にしてください。Mac の場合:「Chrome Tab」から、「Also share tab audio」を ON にしてください。Chrome と Edge は動作します。Firefox は動作しません。'
   select_input_method: マイク入力 or ファイルアップロードから選択してください
   speaker_names: 話し手の名前（カンマ区切り）
   speaker_recognition: 話者認識
@@ -876,7 +879,7 @@ translate:
   detectedLanguage: 検出言語
   enter_text: 入力してください
   realtimeTranslation: リアルタイム翻訳
-  realtime_translation: リアルタイム翻訳
+  realtime_translation: 翻訳
   result_placeholder: 翻訳結果がここに表示されます
   systemGeneratedContext: システム自動コンテキスト
   systemGeneratedContextPlaceholder: 会議内容に基づいて自動生成されたコンテキスト

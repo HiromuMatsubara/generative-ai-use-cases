@@ -12,13 +12,16 @@ import Button from '../Button';
 import ButtonCopy from '../ButtonCopy';
 import ButtonSendToUseCase from '../ButtonSendToUseCase';
 import Select from '../Select';
-import Switch from '../Switch';
 import RangeSlider from '../RangeSlider';
-import ExpandableField from '../ExpandableField';
-import ScreenAudioToggle from '../ScreenAudioToggle';
-import MicAudioToggle from '../MicAudioToggle';
+import TogglePillButton from '../TogglePillButton';
+import Help from '../Help';
 import MeetingMinutesTranscriptSegment from './MeetingMinutesTranscriptSegment';
-import { PiStopCircleBold, PiMicrophoneBold } from 'react-icons/pi';
+import {
+  PiStopCircleBold,
+  PiMicrophoneBold,
+  PiDesktopBold,
+  PiUsersBold,
+} from 'react-icons/pi';
 import useMicrophone from '../../hooks/useMicrophone';
 import useScreenAudio from '../../hooks/useScreenAudio';
 
@@ -341,98 +344,105 @@ const MeetingMinutesTranscription: React.FC<
 
   return (
     <div className="flex h-full flex-col">
-      {/* Voice Transcription Content */}
-      <div className="mb-3 shrink-0">
-        <div className="flex justify-center">
-          {isRecording ? (
-            <Button
-              className="h-10"
-              onClick={() => {
-                stopMicTranscription();
-                stopScreenTranscription();
-              }}>
-              <PiStopCircleBold className="mr-2 h-5 w-5" />
-              {t('transcribe.stop_recording')}
-            </Button>
-          ) : (
-            <Button
-              className="h-10"
-              onClick={onClickExecStartTranscription}
-              outlined={true}>
-              <PiMicrophoneBold className="mr-2 h-5 w-5" />
-              {t('transcribe.start_recording')}
-            </Button>
-          )}
-        </div>
-        {!isRecording && (
-          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <MicAudioToggle
-              enabled={enableMicAudio}
-              onToggle={setEnableMicAudio}
-            />
-            <ScreenAudioToggle
-              enabled={enableScreenAudio}
-              onToggle={setEnableScreenAudio}
-              isSupported={isScreenAudioSupported}
-              noticeText={t('transcribe.screen_audio_notice').replace(
-                /<br\/>/g,
-                '\n'
-              )}
-            />
+      {/* Settings Panel */}
+      {!isRecording && (
+        <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4">
+          <div className="mb-3 text-sm font-bold text-gray-700">
+            {t('meetingMinutes.settings')}
           </div>
-        )}
-      </div>
 
-      {/* Language Selection */}
-      {!isRecording && (
-        <div className="mb-3 shrink-0">
-          <label className="mb-1 block text-sm font-bold">
-            {t('meetingMinutes.language')}
-          </label>
-          <Select
-            value={languageCode}
-            onChange={setLanguageCode}
-            options={languageOptions}
-          />
-        </div>
-      )}
-
-      {/* Speaker Recognition Parameters */}
-      {!isRecording && (
-        <ExpandableField
-          label={t('common.other')}
-          className="mb-3 shrink-0"
-          notItem={true}>
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            <Switch
-              label={t('transcribe.speaker_recognition')}
-              checked={speakerLabel}
-              onSwitch={setSpeakerLabel}
-            />
-            {speakerLabel && (
-              <RangeSlider
-                className=""
-                label={t('transcribe.max_speakers')}
-                min={2}
-                max={10}
-                value={maxSpeakers}
-                onChange={setMaxSpeakers}
-                help={t('transcribe.max_speakers_help')}
+          {/* Input Source */}
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
+              {t('meetingMinutes.input_source')}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <TogglePillButton
+                icon={<PiMicrophoneBold className="h-4 w-4" />}
+                label={t('meetingMinutes.microphone')}
+                isEnabled={enableMicAudio}
+                onToggle={() => setEnableMicAudio(!enableMicAudio)}
+                activeColor="blue"
               />
-            )}
+              {isScreenAudioSupported && (
+                <>
+                  <TogglePillButton
+                    icon={<PiDesktopBold className="h-4 w-4" />}
+                    label={t('transcribe.screen_audio')}
+                    isEnabled={enableScreenAudio}
+                    onToggle={() => setEnableScreenAudio(!enableScreenAudio)}
+                    activeColor="blue"
+                  />
+                  <Help
+                    position="center"
+                    message={t('transcribe.screen_audio_notice')}
+                  />
+                </>
+              )}
+            </div>
           </div>
-          {speakerLabel && (
-            <div className="mt-2">
-              <textarea
-                className="w-full rounded border border-black/30 p-2 text-sm"
-                placeholder={t('transcribe.speaker_names')}
-                value={speakers}
-                onChange={(e) => setSpeakers(e.target.value)}
-                rows={2}
+
+          {/* Option */}
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
+              {t('meetingMinutes.option')}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <TogglePillButton
+                icon={<PiUsersBold className="h-4 w-4" />}
+                label={t('transcribe.speaker_recognition')}
+                isEnabled={speakerLabel}
+                onToggle={() => setSpeakerLabel(!speakerLabel)}
+                activeColor="gray"
               />
             </div>
+          </div>
+
+          {/* Speaker Recognition Parameters (when enabled) */}
+          {speakerLabel && (
+            <div className="mb-3">
+              <div className="mb-2 text-sm font-medium text-gray-700">
+                {t('transcribe.detailed_parameters')}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <RangeSlider
+                  className=""
+                  label={t('transcribe.max_speakers')}
+                  min={2}
+                  max={10}
+                  value={maxSpeakers}
+                  onChange={setMaxSpeakers}
+                  help={t('transcribe.max_speakers_help')}
+                />
+              </div>
+              <div className="mt-2">
+                <textarea
+                  className="w-full rounded border border-black/30 p-2 text-sm"
+                  placeholder={t('transcribe.speaker_names')}
+                  value={speakers}
+                  onChange={(e) => setSpeakers(e.target.value)}
+                  rows={2}
+                />
+              </div>
+            </div>
           )}
-        </ExpandableField>
+
+          {/* Language */}
+          <div className="flex items-center gap-4">
+            <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
+              {t('meetingMinutes.language')}
+            </div>
+            <div className="flex w-48 items-center">
+              <Select
+                value={languageCode}
+                onChange={setLanguageCode}
+                options={languageOptions}
+                fullWidth
+                notItem
+              />
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Screen Audio Error Display */}
@@ -448,6 +458,15 @@ const MeetingMinutesTranscription: React.FC<
         <div className="mb-2 flex shrink-0 items-center justify-between">
           <div className="font-bold">{t('meetingMinutes.transcript')}</div>
           <div className="flex items-center gap-2">
+            {!isRecording && (
+              <Button
+                className="h-8 px-3 py-1 text-sm"
+                onClick={onClickExecStartTranscription}
+                outlined>
+                <PiMicrophoneBold className="mr-1 h-4 w-4" />
+                {t('transcribe.start_recording')}
+              </Button>
+            )}
             {hasTranscriptText && (
               <>
                 <ButtonCopy
@@ -456,6 +475,17 @@ const MeetingMinutesTranscription: React.FC<
                 />
                 <ButtonSendToUseCase text={transcriptionText} />
               </>
+            )}
+            {isRecording && (
+              <Button
+                className="h-8 px-3 py-1 text-sm"
+                onClick={() => {
+                  stopMicTranscription();
+                  stopScreenTranscription();
+                }}>
+                <PiStopCircleBold className="mr-1 h-4 w-4" />
+                {t('transcribe.stop_recording')}
+              </Button>
             )}
             <Button
               outlined
@@ -475,10 +505,12 @@ const MeetingMinutesTranscription: React.FC<
             const isAtBottom = distanceFromBottom < 80; // About 3-4 lines tolerance
             isAtBottomRef.current = isAtBottom;
           }}
-          className="min-h-0 flex-1 overflow-y-auto rounded border border-black/30 p-1.5">
-          {transcriptionSegments.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">
-              {t('transcribe.result_placeholder')}
+          className="relative min-h-0 flex-1 overflow-y-auto rounded border border-black/30 p-1.5">
+          {transcriptionSegments.length === 0 && !isRecording ? (
+            <div className="flex h-full items-center justify-center py-8">
+              <div className="text-center text-gray-500">
+                {t('transcribe.result_placeholder')}
+              </div>
             </div>
           ) : (
             [...transcriptionSegments]

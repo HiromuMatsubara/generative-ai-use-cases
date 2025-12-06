@@ -835,6 +835,7 @@ meetingMinutes:
   generation_frequency: Generation Frequency
   generation_panel: Generate Minutes
   generation_success: Meeting minutes generated successfully
+  input_source: Input Source
   language: Transcription Language
   language_1: Language 1
   language_2: Language 2
@@ -846,12 +847,14 @@ meetingMinutes:
   language_thai: Thai
   language_vietnamese: Vietnamese
   last_generated: Last generated {{time}}
+  microphone: Microphone
   minutes_placeholder: Minutes will appear here after generation
   model: Meeting Minutes Generation Model
   new_recording_session: New Recording Session
   next_generation: Next Generation
   next_generation_in: 'Next generation in : '
   no_transcript: No Transcript
+  option: Option
   partial_indicator: (...)
   record_transcribe: Record & Transcribe
   screen_audio_error: Screen Audio Error
