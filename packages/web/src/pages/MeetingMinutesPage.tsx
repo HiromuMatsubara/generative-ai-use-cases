@@ -249,7 +249,7 @@ const MeetingMinutesPage: React.FC = () => {
           <Card className="flex h-full flex-col">
             {/* Tab Headers */}
             <div className="mb-4 shrink-0 border-b border-gray-200">
-              <div className="flex justify-center gap-2 sm:justify-start sm:gap-0">
+              <div className="flex justify-center gap-2 overflow-x-auto sm:justify-start sm:gap-0">
                 <button
                   className={`flex min-h-[48px] min-w-[48px] items-center justify-center border-b-2 px-3 py-3 text-sm font-medium transition-colors sm:min-h-0 sm:min-w-0 sm:justify-start sm:px-4 sm:py-2 ${
                     inputMethod === 'transcription'
@@ -258,7 +258,7 @@ const MeetingMinutesPage: React.FC = () => {
                   }`}
                   onClick={() => setInputMethod('transcription')}>
                   <PiMicrophoneBold className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">
+                  <span className="hidden text-xs sm:inline">
                     {t('transcribe.voice_transcription')}
                   </span>
                 </button>
@@ -270,7 +270,7 @@ const MeetingMinutesPage: React.FC = () => {
                   }`}
                   onClick={() => setInputMethod('realtime_translation')}>
                   <PiTranslateBold className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">
+                  <span className="hidden text-xs sm:inline">
                     {t('translate.realtime_translation')}
                   </span>
                 </button>
@@ -282,7 +282,7 @@ const MeetingMinutesPage: React.FC = () => {
                   }`}
                   onClick={() => setInputMethod('direct')}>
                   <PiPencilLine className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">
+                  <span className="hidden text-xs sm:inline">
                     {t('transcribe.direct_input')}
                   </span>
                 </button>
@@ -294,7 +294,7 @@ const MeetingMinutesPage: React.FC = () => {
                   }`}
                   onClick={() => setInputMethod('file')}>
                   <PiPaperclip className="h-7 w-7 sm:mr-2 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">
+                  <span className="hidden text-xs sm:inline">
                     {t('transcribe.file_upload')}
                   </span>
                 </button>
@@ -313,6 +313,7 @@ const MeetingMinutesPage: React.FC = () => {
             {/* Tab Content - Self-contained components */}
             <div className="min-h-0 flex-1 overflow-y-auto">
               <div
+                className="h-full"
                 style={{
                   display: inputMethod === 'transcription' ? 'block' : 'none',
                 }}>
@@ -324,6 +325,7 @@ const MeetingMinutesPage: React.FC = () => {
                 />
               </div>
               <div
+                className="h-full"
                 style={{
                   display:
                     inputMethod === 'realtime_translation' ? 'block' : 'none',
@@ -336,6 +338,7 @@ const MeetingMinutesPage: React.FC = () => {
                 />
               </div>
               <div
+                className="h-full"
                 style={{
                   display: inputMethod === 'direct' ? 'block' : 'none',
                 }}>
@@ -344,6 +347,7 @@ const MeetingMinutesPage: React.FC = () => {
                 />
               </div>
               <div
+                className="h-full"
                 style={{ display: inputMethod === 'file' ? 'block' : 'none' }}>
                 <MeetingMinutesFile
                   onTranscriptChange={handleFileTranscriptChange}

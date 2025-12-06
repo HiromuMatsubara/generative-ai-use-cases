@@ -1003,7 +1003,7 @@ const MeetingMinutesRealtimeTranslation: React.FC<
           className="relative min-h-0 flex-1 overflow-y-auto rounded border border-black/30 p-1.5">
           {realtimeSegments.length === 0 && !isRecording ? (
             <div className="flex h-full flex-col items-center justify-center py-8">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-gray-400">
                 {t('transcribe.result_placeholder')}
               </div>
             </div>

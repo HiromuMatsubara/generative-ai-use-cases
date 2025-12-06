@@ -346,7 +346,7 @@ const MeetingMinutesTranscription: React.FC<
     <div className="flex h-full flex-col">
       {/* Settings Panel */}
       {!isRecording && (
-        <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4">
+        <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4 pb-20">
           <div className="mb-3 text-sm font-bold text-gray-700">
             {t('meetingMinutes.settings')}
           </div>
@@ -508,7 +508,7 @@ const MeetingMinutesTranscription: React.FC<
           className="relative min-h-0 flex-1 overflow-y-auto rounded border border-black/30 p-1.5">
           {transcriptionSegments.length === 0 && !isRecording ? (
             <div className="flex h-full items-center justify-center py-8">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-gray-400">
                 {t('transcribe.result_placeholder')}
               </div>
             </div>
