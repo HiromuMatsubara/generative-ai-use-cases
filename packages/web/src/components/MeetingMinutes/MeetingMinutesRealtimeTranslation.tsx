@@ -22,11 +22,14 @@ import {
   PiMicrophoneBold,
   PiDesktopBold,
   PiUsersBold,
+  PiGearBold,
+  PiCaretRightFill,
 } from 'react-icons/pi';
 import useMicrophone from '../../hooks/useMicrophone';
 import useScreenAudio from '../../hooks/useScreenAudio';
 import useRealtimeTranslation from '../../hooks/useRealtimeTranslation';
 import useChatApi from '../../hooks/useChatApi';
+import useIsMobile from '../../hooks/useIsMobile';
 import { MODELS } from '../../hooks/useModel';
 import {
   updateTranslationSegments,
@@ -165,6 +168,15 @@ const MeetingMinutesRealtimeTranslation: React.FC<
 
   // Simple session management
   const [currentSessionId, setCurrentSessionId] = useState(0);
+
+  // Mobile detection and settings panel state
+  const isMobile = useIsMobile();
+  const [settingsExpanded, setSettingsExpanded] = useState(!isMobile);
+
+  // Update settings panel state when screen size changes
+  useEffect(() => {
+    setSettingsExpanded(!isMobile);
+  }, [isMobile]);
 
   // Latest request timestamp tracking for race condition handling
   const [latestRequestTimestamps, setLatestRequestTimestamps] = useState<
@@ -758,156 +770,180 @@ const MeetingMinutesRealtimeTranslation: React.FC<
       {/* Settings Panel */}
       {!isRecording && (
         <div className="mb-4 shrink-0 rounded-lg border border-gray-200 p-4">
-          <div className="mb-3 text-sm font-bold text-gray-700">
+          {/* Settings Header - Clickable on mobile */}
+          <div
+            className={`flex items-center text-sm font-bold text-gray-700 ${
+              isMobile ? 'cursor-pointer' : ''
+            }`}
+            onClick={
+              isMobile
+                ? () => setSettingsExpanded(!settingsExpanded)
+                : undefined
+            }>
+            <PiGearBold className="mr-2 h-4 w-4" />
             {t('meetingMinutes.settings')}
+            {isMobile && (
+              <PiCaretRightFill
+                className={`ml-auto h-3 w-3 transition-transform ${
+                  settingsExpanded ? 'rotate-90' : ''
+                }`}
+              />
+            )}
           </div>
 
-          {/* Input Source */}
-          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
-              {t('meetingMinutes.input_source')}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <TogglePillButton
-                icon={<PiMicrophoneBold className="h-4 w-4" />}
-                label={t('meetingMinutes.microphone')}
-                isEnabled={enableMicAudio}
-                onToggle={() => setEnableMicAudio(!enableMicAudio)}
-                activeColor="blue"
-              />
-              {isScreenAudioSupported && (
-                <>
+          {/* Settings Content - Collapsible on mobile */}
+          {settingsExpanded && (
+            <>
+              {/* Input Source */}
+              <div className="mb-3 flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:gap-4">
+                <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
+                  {t('meetingMinutes.input_source')}
+                </div>
+                <div className="flex flex-wrap gap-2">
                   <TogglePillButton
-                    icon={<PiDesktopBold className="h-4 w-4" />}
-                    label={t('transcribe.screen_audio')}
-                    isEnabled={enableScreenAudio}
-                    onToggle={() => setEnableScreenAudio(!enableScreenAudio)}
+                    icon={<PiMicrophoneBold className="h-4 w-4" />}
+                    label={t('meetingMinutes.microphone')}
+                    isEnabled={enableMicAudio}
+                    onToggle={() => setEnableMicAudio(!enableMicAudio)}
                     activeColor="blue"
                   />
-                  <Help
-                    position="center"
-                    message={t('transcribe.screen_audio_notice')}
+                  {isScreenAudioSupported && (
+                    <>
+                      <TogglePillButton
+                        icon={<PiDesktopBold className="h-4 w-4" />}
+                        label={t('transcribe.screen_audio')}
+                        isEnabled={enableScreenAudio}
+                        onToggle={() =>
+                          setEnableScreenAudio(!enableScreenAudio)
+                        }
+                        activeColor="blue"
+                      />
+                      <Help
+                        position="center"
+                        message={t('transcribe.screen_audio_notice')}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Option */}
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
+                  {t('meetingMinutes.option')}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <TogglePillButton
+                    icon={<PiUsersBold className="h-4 w-4" />}
+                    label={t('transcribe.speaker_recognition')}
+                    isEnabled={speakerLabel}
+                    onToggle={() => setSpeakerLabel(!speakerLabel)}
+                    activeColor="gray"
                   />
-                </>
+                </div>
+              </div>
+
+              {/* Speaker Recognition Parameters (when enabled) */}
+              {speakerLabel && (
+                <div className="mb-3">
+                  <div className="mb-2 text-sm font-medium text-gray-700">
+                    {t('transcribe.detailed_parameters')}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <RangeSlider
+                      className=""
+                      label={t('transcribe.max_speakers')}
+                      min={2}
+                      max={10}
+                      value={maxSpeakers}
+                      onChange={setMaxSpeakers}
+                      help={t('transcribe.max_speakers_help')}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <textarea
+                      className="w-full rounded border border-black/30 p-2 text-sm"
+                      placeholder={t('transcribe.speaker_names')}
+                      value={speakers}
+                      onChange={(e) => setSpeakers(e.target.value)}
+                      rows={2}
+                    />
+                  </div>
+                </div>
               )}
-            </div>
-          </div>
 
-          {/* Option */}
-          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <div className="text-sm text-gray-600 sm:w-28 sm:shrink-0">
-              {t('meetingMinutes.option')}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <TogglePillButton
-                icon={<PiUsersBold className="h-4 w-4" />}
-                label={t('transcribe.speaker_recognition')}
-                isEnabled={speakerLabel}
-                onToggle={() => setSpeakerLabel(!speakerLabel)}
-                activeColor="gray"
-              />
-            </div>
-          </div>
+              {/* Languages */}
+              <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
+                    {translationType === 'bidirectional'
+                      ? t('meetingMinutes.language_1')
+                      : t('meetingMinutes.transcription_language')}
+                  </div>
+                  <div>
+                    <Select
+                      value={primaryLanguage}
+                      onChange={setPrimaryLanguage}
+                      options={languageOptions}
+                      fullWidth
+                      notItem
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600 sm:w-auto">
+                    {translationType === 'bidirectional'
+                      ? t('meetingMinutes.language_2')
+                      : t('meetingMinutes.translation_language')}
+                  </div>
+                  <div>
+                    <Select
+                      value={secondaryLanguage}
+                      onChange={setSecondaryLanguage}
+                      options={targetLanguageOptions}
+                      fullWidth
+                      notItem
+                    />
+                  </div>
+                </div>
+              </div>
 
-          {/* Speaker Recognition Parameters (when enabled) */}
-          {speakerLabel && (
-            <div className="mb-3">
-              <div className="mb-2 text-sm font-medium text-gray-700">
-                {t('transcribe.detailed_parameters')}
+              {/* Translation Type */}
+              <div className="mb-3 flex items-center gap-4">
+                <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
+                  {t('meetingMinutes.translation_type')}
+                </div>
+                <div>
+                  <Select
+                    value={translationType}
+                    onChange={setTranslationType}
+                    options={translationTypeOptions}
+                    fullWidth
+                    notItem
+                  />
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <RangeSlider
-                  className=""
-                  label={t('transcribe.max_speakers')}
-                  min={2}
-                  max={10}
-                  value={maxSpeakers}
-                  onChange={setMaxSpeakers}
-                  help={t('transcribe.max_speakers_help')}
-                />
+
+              {/* Translation Model */}
+              <div className="flex items-center gap-4">
+                <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
+                  {t('meetingMinutes.translation_model')}
+                </div>
+                <div>
+                  <Select
+                    value={selectedTranslationModel}
+                    onChange={setSelectedTranslationModel}
+                    options={availableModels.map((modelId) => ({
+                      value: modelId,
+                      label: MODELS.modelDisplayName(modelId),
+                    }))}
+                    fullWidth
+                    notItem
+                  />
+                </div>
               </div>
-              <div className="mt-2">
-                <textarea
-                  className="w-full rounded border border-black/30 p-2 text-sm"
-                  placeholder={t('transcribe.speaker_names')}
-                  value={speakers}
-                  onChange={(e) => setSpeakers(e.target.value)}
-                  rows={2}
-                />
-              </div>
-            </div>
+            </>
           )}
-
-          {/* Languages */}
-          <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="flex items-center gap-4">
-              <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
-                {translationType === 'bidirectional'
-                  ? t('meetingMinutes.language_1')
-                  : t('meetingMinutes.transcription_language')}
-              </div>
-              <div>
-                <Select
-                  value={primaryLanguage}
-                  onChange={setPrimaryLanguage}
-                  options={languageOptions}
-                  fullWidth
-                  notItem
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600 sm:w-auto">
-                {translationType === 'bidirectional'
-                  ? t('meetingMinutes.language_2')
-                  : t('meetingMinutes.translation_language')}
-              </div>
-              <div>
-                <Select
-                  value={secondaryLanguage}
-                  onChange={setSecondaryLanguage}
-                  options={targetLanguageOptions}
-                  fullWidth
-                  notItem
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Translation Type */}
-          <div className="mb-3 flex items-center gap-4">
-            <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
-              {t('meetingMinutes.translation_type')}
-            </div>
-            <div>
-              <Select
-                value={translationType}
-                onChange={setTranslationType}
-                options={translationTypeOptions}
-                fullWidth
-                notItem
-              />
-            </div>
-          </div>
-
-          {/* Translation Model */}
-          <div className="flex items-center gap-4">
-            <div className="flex h-9 w-28 shrink-0 items-center text-sm text-gray-600">
-              {t('meetingMinutes.translation_model')}
-            </div>
-            <div>
-              <Select
-                value={selectedTranslationModel}
-                onChange={setSelectedTranslationModel}
-                options={availableModels.map((modelId) => ({
-                  value: modelId,
-                  label: MODELS.modelDisplayName(modelId),
-                }))}
-                fullWidth
-                notItem
-              />
-            </div>
-          </div>
         </div>
       )}
 
