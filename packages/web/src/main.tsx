@@ -49,6 +49,10 @@ import WriterPage from './pages/WriterPage.tsx';
 import useUseCases from './hooks/useUseCases';
 import { Toaster } from 'sonner';
 
+if (import.meta.env.DEV) {
+  import('react-grab');
+}
+
 const ragEnabled: boolean = import.meta.env.VITE_APP_RAG_ENABLED === 'true';
 const ragKnowledgeBaseEnabled: boolean =
   import.meta.env.VITE_APP_RAG_KNOWLEDGE_BASE_ENABLED === 'true';
