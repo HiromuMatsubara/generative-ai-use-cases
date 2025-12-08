@@ -95,6 +95,7 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
       transcription: t('meetingMinutes.style_transcription'),
       diagram: t('meetingMinutes.style_diagram'),
       newspaper: t('meetingMinutes.style_newspaper'),
+      whiteboard: t('meetingMinutes.style_whiteboard'),
       custom: t('meetingMinutes.style_custom'),
     };
     return styleOptions[minutesStyle];

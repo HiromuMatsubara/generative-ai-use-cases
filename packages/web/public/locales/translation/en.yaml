@@ -814,7 +814,7 @@ meetingMinutes:
   auto_generate: Auto Generate
   bidirectional: Bidirectional Translation
   both_panel: Both Panels
-  clear_minutes: Clear Minutes
+  clear_minutes: Clear
   custom_prompt: Custom Prompt
   custom_prompt_placeholder: Enter your custom prompt for generating meeting minutes...
   diagram_flowchart: Flowchart (Meeting Flow)
@@ -868,6 +868,7 @@ meetingMinutes:
   style_newspaper: Newspaper
   style_summary: Summary
   style_transcription: Transcription
+  style_whiteboard: Whiteboard
   target_language: Real-time Translation Language
   title: Meeting Minutes Generator
   transcript: Transcript

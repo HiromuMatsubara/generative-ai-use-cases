@@ -165,6 +165,10 @@ const MeetingMinutesSettingsModal: React.FC<
                   label: t('meetingMinutes.style_diagram'),
                 },
                 {
+                  value: 'whiteboard',
+                  label: t('meetingMinutes.style_whiteboard'),
+                },
+                {
                   value: 'newspaper',
                   label: t('meetingMinutes.style_newspaper'),
                 },

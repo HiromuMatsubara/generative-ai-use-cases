@@ -496,6 +496,7 @@ meetingMinutes:
   style_newspaper: 新闻报道
   style_summary: 摘要
   style_transcription: 转录
+  style_whiteboard: 白板
   title: 会议纪要生成器
   transcript: 转录文本
   transcription_panel: 转录文本

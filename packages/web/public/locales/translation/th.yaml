@@ -608,6 +608,7 @@ meetingMinutes:
   style_newspaper: หนังสือพิมพ์
   style_summary: สรุป
   style_transcription: การถอดความ
+  style_whiteboard: ไวท์บอร์ด
   title: ตัวสร้างรายงานการประชุม
   transcript: บันทึกการถอดความ
   transcription_panel: ถอดความ

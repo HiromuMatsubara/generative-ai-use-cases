@@ -79,6 +79,7 @@ export type MeetingMinutesParams = {
     | 'newspaper'
     | 'faq'
     | 'diagram'
+    | 'whiteboard'
     | 'custom';
   customPrompt?: string;
   diagramOptions?: DiagramOption[];

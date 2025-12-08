@@ -37,6 +37,47 @@ import {
 
 import { TFunction } from 'i18next';
 
+// eslint-disable-next-line i18nhelper/no-jp-string
+const MERMAID_SPECIAL_CHARS_WARNING = `
+## Important: Avoid Special Characters
+Mermaid cannot render certain special characters in node labels. You MUST avoid:
+
+### Characters that break syntax:
+- @ symbol
+- { } curly braces
+- ' apostrophe/single quote
+- / at the beginning of node text (e.g., [/command])
+- Japanese bullet point ・ (nakaguro)
+- Full-width symbols: ＃ ＊
+
+### Reserved words and patterns:
+- The word "end" in all lowercase (use "End" or "END" instead)
+- Starting node connections with "o" or "x" (e.g., "A--oB" creates a circle edge)
+
+### Examples of problematic syntax:
+Bad examples (will not render):
+\`\`\`
+Drop[git stash drop stash@{0}]
+Process[変更・検査・ブロック]
+Node[File's content]
+Command[/newtask command]
+\`\`\`
+
+Good examples (will render):
+\`\`\`
+Drop[git stash drop - delete manually]
+Process[変更/検査/ブロック]
+Node[File content]
+Command[newtask command]
+\`\`\`
+
+### If you must use special characters:
+- Wrap text in double quotes: A["text with (parentheses)"]
+- Use HTML entity codes: #quot; for ", #35; for #
+- Replace problematic characters with alternatives: / instead of ・
+
+If technical content contains these characters, rephrase or simplify the text.`;
+
 const systemContexts: { [key: string]: string } = {
   '/chat': `You are an AI assistant helping users in chat.
 When explaining processes, relationships, or structures, you can use Mermaid diagrams in code blocks (e.g., \`\`\`mermaid).
@@ -619,7 +660,6 @@ Only include diagrams when they genuinely help understand the content. Do not fo
           diagramTypes.length > 0
             ? `2. Create Mermaid diagrams to visualize:\n${diagramTypes.join('\n')}`
             : '2. Create appropriate Mermaid diagrams based on the content';
-
         return `As a visual documentation specialist, analyze the transcribed meeting content and create a comprehensive summary using Mermaid diagrams.
 
 ## Output Guidelines
@@ -630,8 +670,24 @@ ${diagramInstructions}
 - Use \`\`\`mermaid code blocks for all diagrams
 - Add brief explanations before each diagram
 - Ensure diagrams are clear and readable
-- Write in the same language as the input text`;
+- Write in the same language as the input text
+${MERMAID_SPECIAL_CHARS_WARNING}`;
       }
+
+      case 'whiteboard':
+        return `Act as a whiteboard facilitator for the meeting. Create exactly ONE Mermaid diagram that visualizes the meeting content.
+
+## Output Rules
+- Output ONLY the Mermaid code block, nothing else
+- No explanations, no summaries, no text before or after
+- Use flowchart or other diagram types as appropriate
+- Write in the same language as the input transcript
+${MERMAID_SPECIAL_CHARS_WARNING}
+
+## Output Format
+\`\`\`mermaid
+[diagram code here]
+\`\`\``;
 
       case 'transcription':
       default:

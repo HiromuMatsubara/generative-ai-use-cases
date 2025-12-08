@@ -458,6 +458,7 @@ meetingMinutes:
   style_newspaper: 신문
   style_summary: 요약
   style_transcription: 전사
+  style_whiteboard: 화이트보드
   title: 회의록 생성기
   transcript: 전사
   transcription_panel: 전사
