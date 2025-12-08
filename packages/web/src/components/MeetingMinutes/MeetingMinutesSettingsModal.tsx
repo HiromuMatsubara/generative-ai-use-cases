@@ -101,6 +101,12 @@ interface MeetingMinutesSettingsModalProps {
   setAutoGenerate: (value: boolean) => void;
   generationFrequency: number;
   setGenerationFrequency: (value: number) => void;
+  // System prompt preview
+  getSystemPrompt: (
+    style: MeetingMinutesParams['style'],
+    customPrompt?: string,
+    diagramOptions?: DiagramOption[]
+  ) => string;
 }
 
 const MeetingMinutesSettingsModal: React.FC<
@@ -122,6 +128,7 @@ const MeetingMinutesSettingsModal: React.FC<
   setAutoGenerate,
   generationFrequency,
   setGenerationFrequency,
+  getSystemPrompt,
 }) => {
   const { t } = useTranslation();
 
@@ -195,6 +202,27 @@ const MeetingMinutesSettingsModal: React.FC<
             />
           </div>
         </div>
+
+        {/* System prompt preview (when style is not 'custom') */}
+        {minutesStyle !== 'custom' && (
+          <div className="mt-2">
+            <details className="group">
+              <summary className="cursor-pointer list-none text-xs text-gray-500 hover:text-gray-700">
+                <span className="group-open:hidden">
+                  {t('meetingMinutes.view_prompt')}
+                </span>
+                <span className="hidden group-open:inline">
+                  {t('meetingMinutes.hide_prompt')}
+                </span>
+              </summary>
+              <div className="mt-2 rounded border bg-gray-50 p-2">
+                <pre className="max-h-32 overflow-y-auto whitespace-pre-wrap text-xs text-gray-600">
+                  {getSystemPrompt(minutesStyle, customPrompt, diagramOptions)}
+                </pre>
+              </div>
+            </details>
+          </div>
+        )}
 
         {/* Custom prompt (when style is 'custom') */}
         {minutesStyle === 'custom' && (

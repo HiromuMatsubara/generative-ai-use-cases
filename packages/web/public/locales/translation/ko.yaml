@@ -431,6 +431,7 @@ meetingMinutes:
   generation_frequency: 생성 빈도
   generation_panel: 회의록 생성
   generation_success: 회의록이 성공적으로 생성되었습니다
+  hide_prompt: ▼ 프롬프트 숨기기
   language: 전사 언어
   language_auto: 자동 감지
   language_chinese: 중국어
@@ -462,6 +463,7 @@ meetingMinutes:
   title: 회의록 생성기
   transcript: 전사
   transcription_panel: 전사
+  view_prompt: ▶ 프롬프트 보기
 model:
   parameters:
     reasoning: 추론

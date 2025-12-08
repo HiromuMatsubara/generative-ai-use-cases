@@ -16,6 +16,7 @@ import MeetingMinutesSettingsModal from './MeetingMinutesSettingsModal';
 import useMeetingMinutes from '../../hooks/useMeetingMinutes';
 import { MODELS } from '../../hooks/useModel';
 import { MeetingMinutesParams, DiagramOption } from '../../prompts';
+import { claudePrompter } from '../../prompts/claude';
 
 interface MeetingMinutesGenerationProps {
   /** Current transcript text to generate minutes from */
@@ -211,6 +212,23 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
     clearMinutes();
   }, [clearMinutes]);
 
+  // Get system prompt for preview
+  const getSystemPrompt = useCallback(
+    (
+      style: MeetingMinutesParams['style'],
+      customPromptOverride?: string,
+      diagramOptionsOverride?: DiagramOption[]
+    ) => {
+      const params: MeetingMinutesParams = {
+        style,
+        customPrompt: customPromptOverride || customPrompt,
+        diagramOptions: diagramOptionsOverride || diagramOptions,
+      };
+      return claudePrompter.meetingMinutesPrompt(params);
+    },
+    [customPrompt, diagramOptions]
+  );
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Compact header with settings button and action buttons */}
@@ -220,7 +238,9 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
             <PiGearSix className="text-xl" />
           </ButtonIcon>
           {/* eslint-disable-next-line @shopify/jsx-no-hardcoded-content */}
-          <span className="text-sm text-gray-600">
+          <span
+            onClick={() => setIsSettingsOpen(true)}
+            className="cursor-pointer text-sm text-gray-600">
             {`${styleLabel} / ${modelDisplayName(modelId)}`}
           </span>
           {autoGenerate && countdownSeconds > 0 && (
@@ -284,6 +304,7 @@ const MeetingMinutesGeneration: React.FC<MeetingMinutesGenerationProps> = ({
         setAutoGenerate={setAutoGenerate}
         generationFrequency={generationFrequency}
         setGenerationFrequency={setGenerationFrequency}
+        getSystemPrompt={getSystemPrompt}
       />
     </div>
   );

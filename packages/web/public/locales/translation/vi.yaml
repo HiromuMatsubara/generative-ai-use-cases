@@ -565,6 +565,7 @@ meetingMinutes:
   generation_frequency: Tần suất tạo
   generation_panel: Tạo biên bản họp
   generation_success: Tạo biên bản cuộc họp thành công
+  hide_prompt: ▼ Ẩn prompt
   language: Ngôn ngữ phiên âm
   language_auto: Tự động phát hiện
   language_chinese: Tiếng Trung
@@ -596,6 +597,7 @@ meetingMinutes:
   title: Trình tạo biên bản cuộc họp
   transcript: Bản chuyển đổi
   transcription_panel: Phiên âm
+  view_prompt: ▶ Xem prompt
 model:
   parameters:
     reasoning_budget: Token budget for extended thinking

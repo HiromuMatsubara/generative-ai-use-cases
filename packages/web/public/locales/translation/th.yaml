@@ -581,6 +581,7 @@ meetingMinutes:
   generation_frequency: ความถี่ในการสร้าง
   generation_panel: สร้างรายงานการประชุม
   generation_success: สร้างรายงานการประชุมสำเร็จ
+  hide_prompt: ▼ ซ่อนพรอมต์
   language: ภาษาการถอดเสียง
   language_auto: ตรวจจับอัตโนมัติ
   language_chinese: จีน
@@ -612,6 +613,7 @@ meetingMinutes:
   title: ตัวสร้างรายงานการประชุม
   transcript: บันทึกการถอดความ
   transcription_panel: ถอดความ
+  view_prompt: ▶ ดูพรอมต์
 model:
   parameters:
     reasoning_budget: งบประมาณการให้เหตุผล

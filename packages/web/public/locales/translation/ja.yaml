@@ -681,6 +681,7 @@ meetingMinutes:
   generation_frequency: 生成頻度
   generation_panel: 議事録生成
   generation_success: 議事録が正常に生成されました
+  hide_prompt: ▼ プロンプトを非表示
   input_source: 入力ソース
   language: 文字起こし言語
   language_1: 言語1
@@ -724,6 +725,7 @@ meetingMinutes:
   translation_model: 翻訳モデル
   translation_type: 翻訳方式
   unidirectional: 片方向翻訳
+  view_prompt: ▶ プロンプトを表示
 model:
   parameters:
     reasoning_budget: 深く考えるトークン数上限

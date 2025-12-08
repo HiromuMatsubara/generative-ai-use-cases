@@ -835,6 +835,7 @@ meetingMinutes:
   generation_frequency: Generation Frequency
   generation_panel: Generate Minutes
   generation_success: Meeting minutes generated successfully
+  hide_prompt: ▼ Hide prompt
   input_source: Input Source
   language: Transcription Language
   language_1: Language 1
@@ -878,6 +879,7 @@ meetingMinutes:
   translation_model: Real-time Translation Model
   translation_type: Translation Type
   unidirectional: Unidirectional Translation
+  view_prompt: ▶ View prompt
 model:
   parameters:
     reasoning_budget: Token budget for extended thinking
