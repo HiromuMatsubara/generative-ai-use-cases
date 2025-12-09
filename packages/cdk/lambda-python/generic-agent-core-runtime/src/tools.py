@@ -81,10 +81,7 @@ class ToolManager:
             mcp_clients = []
 
             with ThreadPoolExecutor() as executor:
-                futures = [
-                    executor.submit(_create_mcp_client, name, config, uv_env)
-                    for name, config in mcp_servers.items()
-                ]
+                futures = [executor.submit(_create_mcp_client, name, config, uv_env) for name, config in mcp_servers.items()]
                 for future in futures:
                     name, client = future.result()
                     if client:
@@ -123,12 +120,9 @@ class ToolManager:
             mcp_clients = []
 
             servers_to_load = {name: available_servers[name] for name in server_names if name in available_servers}
-            
+
             with ThreadPoolExecutor() as executor:
-                futures = [
-                    executor.submit(_create_mcp_client, name, config, uv_env)
-                    for name, config in servers_to_load.items()
-                ]
+                futures = [executor.submit(_create_mcp_client, name, config, uv_env) for name, config in servers_to_load.items()]
                 for future in futures:
                     name, client = future.result()
                     if client:
