@@ -4526,7 +4526,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:b8803dd67839af22d586120d43818127ced1cfe504161a7b6613866c5700621b",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
             },
           },
         },
@@ -4915,7 +4915,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:b8803dd67839af22d586120d43818127ced1cfe504161a7b6613866c5700621b",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
             },
           },
         },
@@ -26596,7 +26596,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:b8803dd67839af22d586120d43818127ced1cfe504161a7b6613866c5700621b",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
             },
           },
         },
@@ -26985,7 +26985,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:b8803dd67839af22d586120d43818127ced1cfe504161a7b6613866c5700621b",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
             },
           },
         },
