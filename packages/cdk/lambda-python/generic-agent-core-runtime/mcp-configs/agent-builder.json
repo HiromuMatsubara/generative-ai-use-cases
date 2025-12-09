@@ -74,6 +74,14 @@
         "category": "Search",
         "description": "Web search and research capabilities powered by Tavily"
       }
+    },
+    "tavily-gateway": {
+      "command": "uvx",
+      "args": ["mcp-proxy-for-aws", "<AgentCore Gateway Endpoint>"],
+      "metadata": {
+        "category": "Search",
+        "description": "Web search and research capabilities powered by Tavily"
+      }
     }
   }
 }
