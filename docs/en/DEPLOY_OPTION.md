@@ -688,11 +688,11 @@ This is a use case for integrating with agents created in AgentCore. (Experiment
 Enabling `createGenericAgentCoreRuntime` will deploy the default AgentCore Runtime.
 By default, it is deployed to `modelRegion`, but you can override it by specifying `agentCoreRegion`.
 
-The default agents available in AgentCore can use MCP servers defined in [generic.json](packages/cdk/lambda-python/generic-agent-core-runtime/mcp-configs/generic.json).
+The default agents available in AgentCore can use MCP servers defined in [generic/mcp.json](packages/cdk/lambda-python/generic-agent-core-runtime/mcp-configs/generic/mcp.json).
 
 The MCP servers defined by default are AWS-related MCP servers and MCP servers related to current time.
 For more details, please refer to [this documentation](https://awslabs.github.io/mcp/).
-To add MCP servers, add them to the aforementioned `generic.json`.
+To add MCP servers, add them to the aforementioned `generic/mcp.json`.
 
 You can use externally created AgentCore Runtimes with `agentCoreExternalRuntimes`.
 
@@ -767,7 +767,7 @@ const envs: Record<string, Partial<StackInput>> = {
 
 This is a use case where users can freely create Agents for each use case by configuring system prompts and arbitrary MCPs. (Experimental: Breaking changes may be made without notice)
 
-Similar to the AgentCore use case, administrators pre-register MCPs in [agent-builder.json](packages/cdk/lambda-python/generic-agent-core-runtime/mcp-configs/agent-builder.json). Users can selectively use their preferred MCPs from those registered by administrators.
+Similar to the AgentCore use case, administrators pre-register MCPs in [agent-builder/mcp.json](packages/cdk/lambda-python/generic-agent-core-runtime/mcp-configs/agent-builder/mcp.json). Users can selectively use their preferred MCPs from those registered by administrators.
 
 Enabling `agentBuilderEnabled` will deploy the AgentCore Runtime for Agent Builder.
 By default, it is deployed to `modelRegion`, but you can override it by specifying `agentCoreRegion`.

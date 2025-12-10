@@ -4526,7 +4526,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:f6d28c07c245797c0286aed09508725a8704683f4034d50fabf9329b5be6ab2c",
             },
           },
         },
@@ -4535,7 +4535,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
           "FILE_BUCKET": {
             "Ref": "GenericAgentCoreAgentCoreFileBucket0430DA42",
           },
-          "MCP_CONFIG_PATH": "/var/task/mcp-configs/agent-builder.json",
+          "MCP_CONFIG_PATH": "/var/task/mcp-configs/agent-builder/mcp.json",
           "SUPPORTED_CACHE_FIELDS": "{"anthropic.claude-opus-4-5-20251101-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-5-20250929-v1:0":["messages","system","tools"],"anthropic.claude-haiku-4-5-20251001-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-1-20250805-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-3-7-sonnet-20250219-v1:0":["messages","system","tools"],"anthropic.claude-3-5-haiku-20241022-v1:0":["messages","system","tools"],"amazon.nova-premier-v1:0":["messages","system"],"amazon.nova-pro-v1:0":["messages","system"],"amazon.nova-lite-v1:0":["messages","system"],"amazon.nova-micro-v1:0":["messages","system"],"amazon.nova-2-lite-v1:0":["messages","system"]}",
         },
         "NetworkConfiguration": {
@@ -4915,7 +4915,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:f6d28c07c245797c0286aed09508725a8704683f4034d50fabf9329b5be6ab2c",
             },
           },
         },
@@ -4924,7 +4924,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 4`] = `
           "FILE_BUCKET": {
             "Ref": "GenericAgentCoreAgentCoreFileBucket0430DA42",
           },
-          "MCP_CONFIG_PATH": "/var/task/mcp-configs/generic.json",
+          "MCP_CONFIG_PATH": "/var/task/mcp-configs/generic/mcp.json",
           "SUPPORTED_CACHE_FIELDS": "{"anthropic.claude-opus-4-5-20251101-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-5-20250929-v1:0":["messages","system","tools"],"anthropic.claude-haiku-4-5-20251001-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-1-20250805-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-3-7-sonnet-20250219-v1:0":["messages","system","tools"],"anthropic.claude-3-5-haiku-20241022-v1:0":["messages","system","tools"],"amazon.nova-premier-v1:0":["messages","system"],"amazon.nova-pro-v1:0":["messages","system"],"amazon.nova-lite-v1:0":["messages","system"],"amazon.nova-micro-v1:0":["messages","system"],"amazon.nova-2-lite-v1:0":["messages","system"]}",
         },
         "NetworkConfiguration": {
@@ -26596,7 +26596,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:f6d28c07c245797c0286aed09508725a8704683f4034d50fabf9329b5be6ab2c",
             },
           },
         },
@@ -26605,7 +26605,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
           "FILE_BUCKET": {
             "Ref": "GenericAgentCoreAgentCoreFileBucket0430DA42",
           },
-          "MCP_CONFIG_PATH": "/var/task/mcp-configs/agent-builder.json",
+          "MCP_CONFIG_PATH": "/var/task/mcp-configs/agent-builder/mcp.json",
           "SUPPORTED_CACHE_FIELDS": "{"anthropic.claude-opus-4-5-20251101-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-5-20250929-v1:0":["messages","system","tools"],"anthropic.claude-haiku-4-5-20251001-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-1-20250805-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-3-7-sonnet-20250219-v1:0":["messages","system","tools"],"anthropic.claude-3-5-haiku-20241022-v1:0":["messages","system","tools"],"amazon.nova-premier-v1:0":["messages","system"],"amazon.nova-pro-v1:0":["messages","system"],"amazon.nova-lite-v1:0":["messages","system"],"amazon.nova-micro-v1:0":["messages","system"],"amazon.nova-2-lite-v1:0":["messages","system"]}",
         },
         "NetworkConfiguration": {
@@ -26985,7 +26985,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
         "AgentRuntimeArtifact": {
           "ContainerConfiguration": {
             "ContainerUri": {
-              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:01c40c1a0a500ed72fecad27b1a1d69fc6b58a5c879d7eee28bdd5d9775cbdde",
+              "Fn::Sub": "123456890123.dkr.ecr.us-east-1.\${AWS::URLSuffix}/cdk-hnb659fds-container-assets-123456890123-us-east-1:f6d28c07c245797c0286aed09508725a8704683f4034d50fabf9329b5be6ab2c",
             },
           },
         },
@@ -26994,7 +26994,7 @@ exports[`GenerativeAiUseCases matches the snapshot 4`] = `
           "FILE_BUCKET": {
             "Ref": "GenericAgentCoreAgentCoreFileBucket0430DA42",
           },
-          "MCP_CONFIG_PATH": "/var/task/mcp-configs/generic.json",
+          "MCP_CONFIG_PATH": "/var/task/mcp-configs/generic/mcp.json",
           "SUPPORTED_CACHE_FIELDS": "{"anthropic.claude-opus-4-5-20251101-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-5-20250929-v1:0":["messages","system","tools"],"anthropic.claude-haiku-4-5-20251001-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-1-20250805-v1:0":["messages","system","tools"],"anthropic.claude-opus-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-sonnet-4-20250514-v1:0":["messages","system","tools"],"anthropic.claude-3-7-sonnet-20250219-v1:0":["messages","system","tools"],"anthropic.claude-3-5-haiku-20241022-v1:0":["messages","system","tools"],"amazon.nova-premier-v1:0":["messages","system"],"amazon.nova-pro-v1:0":["messages","system"],"amazon.nova-lite-v1:0":["messages","system"],"amazon.nova-micro-v1:0":["messages","system"],"amazon.nova-2-lite-v1:0":["messages","system"]}",
         },
         "NetworkConfiguration": {

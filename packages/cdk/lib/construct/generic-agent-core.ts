@@ -99,7 +99,7 @@ export class GenericAgentCore extends Construct {
         serverProtocol: 'HTTP',
         environmentVariables: {
           FILE_BUCKET: bucketName,
-          MCP_CONFIG_PATH: '/var/task/mcp-configs/generic.json',
+          MCP_CONFIG_PATH: '/var/task/mcp-configs/generic/mcp.json',
           SUPPORTED_CACHE_FIELDS: JSON.stringify(SUPPORTED_CACHE_FIELDS),
         },
       },
@@ -113,7 +113,7 @@ export class GenericAgentCore extends Construct {
         serverProtocol: 'HTTP',
         environmentVariables: {
           FILE_BUCKET: bucketName,
-          MCP_CONFIG_PATH: '/var/task/mcp-configs/agent-builder.json',
+          MCP_CONFIG_PATH: '/var/task/mcp-configs/agent-builder/mcp.json',
           SUPPORTED_CACHE_FIELDS: JSON.stringify(SUPPORTED_CACHE_FIELDS),
         },
       },
