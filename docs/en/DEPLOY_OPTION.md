@@ -699,7 +699,7 @@ You can use externally created AgentCore Runtimes with `agentCoreExternalRuntime
 When accessing services outside AWS from AgentCore Runtime, use AgentCore Gateway.
 By specifying the Gateway ARN in `agentCoreGatewayArns`, an IAM policy following the principle of least privilege will be configured.
 After configuration, use `mcp-proxy-for-aws` in the MCP settings to specify the endpoint.
-For details, refer to the [mcp-proxy-for-aws documentation](https://github.com/aws-samples/mcp-proxy-for-aws).
+For details, refer to the [mcp-proxy-for-aws documentation](https://github.com/aws/mcp-proxy-for-aws).
 
 To enable the AgentCore use case, the `docker` command must be executable.
 
@@ -775,7 +775,7 @@ By default, it is deployed to `modelRegion`, but you can override it by specifyi
 When accessing services outside AWS, use AgentCore Gateway.
 By specifying the Gateway ARN in `agentCoreGatewayArns`, an IAM policy following the principle of least privilege will be configured.
 After configuration, use `mcp-proxy-for-aws` in the MCP settings to specify the endpoint.
-For details, refer to the [mcp-proxy-for-aws documentation](https://github.com/aws-samples/mcp-proxy-for-aws).
+For details, refer to the [mcp-proxy-for-aws documentation](https://github.com/aws/mcp-proxy-for-aws).
 
 **Edit [parameter.ts](/packages/cdk/parameter.ts)**
 
