@@ -9,9 +9,9 @@ import {
   EndpointType,
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, LayerVersion, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IdentityPool } from 'aws-cdk-lib/aws-cognito-identitypool';
 import {
@@ -40,6 +40,7 @@ import {
   IVpc,
   ISecurityGroup,
 } from 'aws-cdk-lib/aws-ec2';
+import * as path from 'path';
 
 export interface BackendApiProps {
   // Context Params
@@ -166,9 +167,17 @@ export class Api extends Construct {
       maxAge: 3000,
     });
 
+    // Lambda Layer for Bedrock SDK
+    const bedrockSdkLayer = new LayerVersion(this, 'BedrockSdkLayer', {
+      compatibleRuntimes: [LAMBDA_RUNTIME_NODEJS],
+      code: Code.fromAsset(path.join(__dirname, '../../lambda-layer')),
+      description: 'Bedrock SDK Layer',
+    });
+
     // Lambda
     const predictFunction = new NodejsFunction(this, 'Predict', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/predict.ts',
       timeout: Duration.minutes(15),
       environment: {
@@ -193,6 +202,7 @@ export class Api extends Construct {
 
     const predictStreamFunction = new NodejsFunction(this, 'PredictStream', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/predictStream.ts',
       timeout: Duration.minutes(15),
       memorySize: 256,
@@ -235,6 +245,7 @@ export class Api extends Construct {
     // Add Flow Lambda Function
     const invokeFlowFunction = new NodejsFunction(this, 'InvokeFlow', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/invokeFlow.ts',
       timeout: Duration.minutes(15),
       bundling: {
@@ -253,6 +264,7 @@ export class Api extends Construct {
 
     const predictTitleFunction = new NodejsFunction(this, 'PredictTitle', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/predictTitle.ts',
       timeout: Duration.minutes(15),
       bundling: {
@@ -279,6 +291,7 @@ export class Api extends Construct {
 
     const generateImageFunction = new NodejsFunction(this, 'GenerateImage', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/generateImage.ts',
       timeout: Duration.minutes(15),
       environment: {
@@ -297,6 +310,7 @@ export class Api extends Construct {
 
     const generateVideoFunction = new NodejsFunction(this, 'GenerateVideo', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/generateVideo.ts',
       timeout: Duration.minutes(15),
       environment: {
@@ -333,6 +347,7 @@ export class Api extends Construct {
 
     const copyVideoJob = new NodejsFunction(this, 'CopyVideoJob', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/copyVideoJob.ts',
       timeout: Duration.minutes(15),
       memorySize: 512,
@@ -370,6 +385,7 @@ export class Api extends Construct {
 
     const listVideoJobs = new NodejsFunction(this, 'ListVideoJobs', {
       runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer],
       entry: './lambda/listVideoJobs.ts',
       timeout: Duration.minutes(15),
       environment: {
@@ -412,6 +428,7 @@ export class Api extends Construct {
       'OptimizePromptFunction',
       {
         runtime: LAMBDA_RUNTIME_NODEJS,
+        layers: [bedrockSdkLayer],
         entry: './lambda/optimizePrompt.ts',
         timeout: Duration.minutes(15),
         bundling: {

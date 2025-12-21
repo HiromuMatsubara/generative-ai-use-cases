@@ -1,0 +1,12 @@
+{
+  "name": "lambda-build",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "clean": "rimraf ../lambda-dist"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "rimraf": "^6.0.1"
+  }
+}

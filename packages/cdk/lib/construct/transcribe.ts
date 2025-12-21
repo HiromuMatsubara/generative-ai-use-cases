@@ -8,7 +8,7 @@ import {
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { IdentityPool } from 'aws-cdk-lib/aws-cognito-identitypool';
 import { Effect, Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import {
   BlockPublicAccess,
   Bucket,

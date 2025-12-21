@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as agw from 'aws-cdk-lib/aws-apigateway';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { ModelConfiguration } from 'generative-ai-use-cases';
 import { BEDROCK_SPEECH_TO_SPEECH_MODELS } from '@generative-ai-use-cases/common';

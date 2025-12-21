@@ -8,7 +8,7 @@ import {
   LambdaIntegration,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import { LAMBDA_RUNTIME_NODEJS } from '../../consts';
 import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 

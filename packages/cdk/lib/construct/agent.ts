@@ -1,6 +1,6 @@
 import { Duration, Lazy, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import {
   Effect,
   PolicyDocument,

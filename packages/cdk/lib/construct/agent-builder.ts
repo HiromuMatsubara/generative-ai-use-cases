@@ -6,9 +6,9 @@ import {
 } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 import {
-  NodejsFunction,
-  NodejsFunctionProps,
-} from 'aws-cdk-lib/aws-lambda-nodejs';
+  PrebuiltFunction as NodejsFunction,
+  PrebuiltFunctionProps as NodejsFunctionProps,
+} from './prebuilt-function';
 import { Duration } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';

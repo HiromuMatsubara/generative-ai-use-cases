@@ -2,7 +2,8 @@
   "name": "cdk",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "npm run lambda:build && tsc",
+    "lambda:build": "npm install --prefix lambda-build && npm run build --prefix lambda-build && node lambda-build/build-layer.mjs",
     "watch": "tsc -w",
     "test": "jest",
     "test:lambda:watch": "jest lambda --watchAll",
@@ -50,7 +51,7 @@
     "aws-jwt-verify": "^4.0.0",
     "cdk-remote-stack": "^2.1.0",
     "constructs": "^10.3.0",
-    "deploy-time-build": "^0.3.17",
+    "deploy-time-build": "^0.4.4",
     "node-html-parser": "^6.1.13",
     "sanitize-html": "^2.13.0",
     "source-map-support": "^0.5.21",

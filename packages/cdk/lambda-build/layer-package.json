@@ -1,0 +1,7 @@
+{
+  "name": "lambda-layer",
+  "private": true,
+  "scripts": {
+    "build": "node build-layer.mjs"
+  }
+}

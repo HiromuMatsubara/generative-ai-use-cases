@@ -5,7 +5,15 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
-  ignorePatterns: ['cdk.out', '.eslintrc.cjs', 'custom-resources/**', 'dist'],
+  ignorePatterns: [
+    'cdk.out',
+    '.eslintrc.cjs',
+    'custom-resources/**',
+    'dist',
+    'lambda-build/**/*.mjs',
+    'lambda-dist/**',
+    'lambda-layer/**',
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: './tsconfig.json',
