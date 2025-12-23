@@ -1407,10 +1407,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 1`] = `
             "Key": "aws-cdk:auto-delete-objects",
             "Value": "true",
           },
-          {
-            "Key": "aws-cdk:cr-owned:656af005",
-            "Value": "true",
-          },
         ],
       },
       "Type": "AWS::S3::Bucket",
@@ -13182,6 +13178,21 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
       "Type": "AWS::ApiGateway::Authorizer",
       "UpdateReplacePolicy": "Delete",
     },
+    "APIBedrockSdkLayerDAE895D3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "CompatibleRuntimes": [
+          "nodejs22.x",
+        ],
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
+          "S3Key": "HASH-REPLACED.zip",
+        },
+        "Description": "Bedrock SDK Layer",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+      "UpdateReplacePolicy": "Delete",
+    },
     "APICopyVideoJobB772026B": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -13221,6 +13232,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
@@ -15232,6 +15248,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIGenerateImageServiceRoleC0428356",
@@ -15376,6 +15397,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIGenerateVideoServiceRole3DDCDDA7",
@@ -16347,6 +16373,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIInvokeFlowServiceRole61C02E4B",
@@ -16937,6 +16968,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIListVideoJobsServiceRole171468E3",
@@ -17123,6 +17159,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIOptimizePromptFunctionServiceRole408208AA",
@@ -17252,6 +17293,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIPredictServiceRole6B8A4E2C",
@@ -17422,6 +17468,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "MemorySize": 256,
         "Role": {
           "Fn::GetAtt": [
@@ -17592,6 +17643,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIPredictTitleServiceRoleAC90BDCD",
@@ -18950,6 +19006,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
             "Arn",
           ],
         },
+        "assetBucketName": "cdk-hnb659fds-assets-123456890123-us-east-1",
         "buildCommands": [
           "npm ci",
           "npm run web:build",
@@ -18957,9 +19014,12 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         "codeBuildProjectName": {
           "Ref": "ApiBuildWebProjectDF2CE9D0",
         },
-        "destinationBucketName": "cdk-hnb659fds-assets-123456890123-us-east-1",
+        "destinationBucketName": {
+          "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputRefClosedWebWebBucket6C6180EC94FAE0A6",
+        },
+        "destinationKeyPrefix": "/",
         "environment": {
-          "NODE_OPTIONS": "--max-old-space-size=4096",
+          "NODE_OPTIONS": "--max-old-space-size=15000",
           "VITE_APP_AGENT_CORE_AGENT_BUILDER_ENABLED": "true",
           "VITE_APP_AGENT_CORE_AGENT_BUILDER_RUNTIME": {
             "Fn::Join": [
@@ -19156,54 +19216,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
       "Type": "Custom::CDKNodejsBuild",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiBuildWebDeployAwsCliLayer187512BE": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "ApiBuildWeb746ABF13",
-      ],
-      "Properties": {
-        "Content": {
-          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
-          "S3Key": "HASH-REPLACED.zip",
-        },
-        "Description": "/opt/awscli/aws",
-      },
-      "Type": "AWS::Lambda::LayerVersion",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ApiBuildWebDeployCustomResource512MiBE7E7D353": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "ApiBuildWeb746ABF13",
-      ],
-      "Properties": {
-        "DestinationBucketName": {
-          "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputRefClosedWebWebBucket6C6180EC94FAE0A6",
-        },
-        "OutputObjectKeys": true,
-        "Prune": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiB6723FB92",
-            "Arn",
-          ],
-        },
-        "SourceBucketNames": [
-          "cdk-hnb659fds-assets-123456890123-us-east-1",
-        ],
-        "SourceObjectKeys": [
-          {
-            "Fn::GetAtt": [
-              "ApiBuildWeb746ABF13",
-              "destinationObjectKey",
-            ],
-          },
-        ],
-        "WaitForDistributionInvalidation": true,
-      },
-      "Type": "Custom::CDKBucketDeployment",
-      "UpdateReplacePolicy": "Delete",
-    },
     "ApiBuildWebProjectDF2CE9D0": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -19215,7 +19227,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         },
         "EncryptionKey": "alias/aws/s3",
         "Environment": {
-          "ComputeType": "BUILD_GENERAL1_MEDIUM",
+          "ComputeType": "BUILD_GENERAL1_LARGE",
           "Image": "aws/codebuild/standard:7.0",
           "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
@@ -19249,15 +19261,15 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         "ls -la",
         "cd \\"$current_dir\\"",
         "cd \\"$outputSourceDirectory\\"",
-        "zip -r output.zip ./",
-        "aws s3 cp output.zip \\"s3://$destinationBucketName/$destinationObjectKey\\"",
-        "\\nif [[ $outputEnvFile == \\"true\\" ]]\\nthen\\n  # Split the comma-separated string into an array\\n  for var_name in \${envNames//,/ }\\n  do\\n      echo \\"Element: $var_name\\"\\n      var_value=\\"\${!var_name}\\"\\n      echo \\"$var_name=$var_value\\" >> tmp.env\\n  done\\n\\n  aws s3 cp tmp.env \\"s3://$destinationBucketName/$envFileKey\\"\\nfi\\n              "
+        "aws s3 sync . \\"s3://$destinationBucketName/$destinationKeyPrefix\\" --delete",
+        "\\nif [[ -n \\"$distributionId\\" ]]\\nthen\\nINVALIDATION_OUTPUT=$(aws cloudfront create-invalidation --distribution-id \\"$distributionId\\" --paths \\"$distributionPath\\" --output json)\\nINVALIDATION_ID=$(echo \\"$INVALIDATION_OUTPUT\\" | jq -r '.Invalidation.Id')\\naws cloudfront wait invalidation-completed --distribution-id \\"$distributionId\\" --id \\"$INVALIDATION_ID\\"\\nfi\\n",
+        "\\nif [[ $outputEnvFile == \\"true\\" ]]\\nthen\\n  # Split the comma-separated string into an array\\n  for var_name in \${envNames//,/ }\\n  do\\n      echo \\"Element: $var_name\\"\\n      var_value=\\"\${!var_name}\\"\\n      echo \\"$var_name=$var_value\\" >> tmp.env\\n  done\\n\\n  aws s3 cp tmp.env \\"s3://$assetBucketName/$envFileKey\\"\\nfi\\n              "
       ]
     },
     "post_build": {
       "commands": [
         "echo Build completed on \`date\`",
-        "\\nSTATUS='SUCCESS'\\nif [ $CODEBUILD_BUILD_SUCCEEDING -ne 1 ] # Test if the build is failing\\nthen\\nSTATUS='FAILED'\\nREASON=\\"NodejsBuild failed. See CloudWatch Log stream for the detailed reason: \\nhttps://$AWS_REGION.console.aws.amazon.com/cloudwatch/home?region=$AWS_REGION#logsV2:log-groups/log-group/\\\\$252Faws\\\\$252Fcodebuild\\\\$252F$projectName/log-events/$CODEBUILD_LOG_PATH\\"\\nfi\\ncat <<EOF > payload.json\\n{\\n  \\"StackId\\": \\"$stackId\\",\\n  \\"RequestId\\": \\"$requestId\\",\\n  \\"LogicalResourceId\\":\\"$logicalResourceId\\",\\n  \\"PhysicalResourceId\\": \\"$logicalResourceId\\",\\n  \\"Status\\": \\"$STATUS\\",\\n  \\"Reason\\": \\"$REASON\\",\\n  \\"Data\\": {\\n    \\"destinationObjectKey\\": \\"$destinationObjectKey\\",\\n    \\"envFileKey\\": \\"$envFileKey\\"\\n  }\\n}\\nEOF\\ncurl -v -i -X PUT -H 'Content-Type:' -d \\"@payload.json\\" \\"$responseURL\\"\\n              "
+        "\\nSTATUS='SUCCESS'\\nif [ $CODEBUILD_BUILD_SUCCEEDING -ne 1 ] # Test if the build is failing\\nthen\\nSTATUS='FAILED'\\nREASON=\\"NodejsBuild failed. See CloudWatch Log stream for the detailed reason: \\nhttps://$AWS_REGION.console.aws.amazon.com/cloudwatch/home?region=$AWS_REGION#logsV2:log-groups/log-group/\\\\$252Faws\\\\$252Fcodebuild\\\\$252F$projectName/log-events/$CODEBUILD_LOG_PATH\\"\\nfi\\ncat <<EOF > payload.json\\n{\\n  \\"StackId\\": \\"$stackId\\",\\n  \\"RequestId\\": \\"$requestId\\",\\n  \\"LogicalResourceId\\":\\"$logicalResourceId\\",\\n  \\"PhysicalResourceId\\": \\"$logicalResourceId\\",\\n  \\"Status\\": \\"$STATUS\\",\\n  \\"Reason\\": \\"$REASON\\",\\n  \\"Data\\": {\\n    \\"envFileKey\\": \\"$envFileKey\\"\\n  }\\n}\\nEOF\\ncurl -i -X PUT -H 'Content-Type:' -d \\"@payload.json\\" \\"$responseURL\\"\\n              "
       ]
     }
   }
@@ -19364,37 +19376,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1",
-                    ],
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
                 "s3:DeleteObject*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
@@ -19402,6 +19383,30 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
                 "s3:PutObjectTagging",
                 "s3:PutObjectVersionTagging",
                 "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputFnGetAttClosedWebWebBucket6C6180ECArn51D7CA47",
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputFnGetAttClosedWebWebBucket6C6180ECArn51D7CA47",
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -19990,157 +19995,6 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
       "Type": "AWS::IAM::Policy",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiB6723FB92": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726",
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
-          "S3Key": "HASH-REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
-          },
-        },
-        "Handler": "index.handler",
-        "Layers": [
-          {
-            "Ref": "ApiBuildWebDeployAwsCliLayer187512BE",
-          },
-        ],
-        "MemorySize": 512,
-        "Role": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.13",
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1",
-                    ],
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputFnGetAttClosedWebWebBucket6C6180ECArn51D7CA47",
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::ImportValue": "ClosedNetworkStack:ExportsOutputFnGetAttClosedWebWebBucket6C6180ECArn51D7CA47",
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726",
-        "Roles": [
-          {
-            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-      "UpdateReplacePolicy": "Delete",
-    },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -20394,7 +20248,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",
@@ -35075,6 +34929,21 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
       "Type": "AWS::ApiGateway::Authorizer",
       "UpdateReplacePolicy": "Delete",
     },
+    "APIBedrockSdkLayerDAE895D3": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "CompatibleRuntimes": [
+          "nodejs22.x",
+        ],
+        "Content": {
+          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
+          "S3Key": "HASH-REPLACED.zip",
+        },
+        "Description": "Bedrock SDK Layer",
+      },
+      "Type": "AWS::Lambda::LayerVersion",
+      "UpdateReplacePolicy": "Delete",
+    },
     "APICopyVideoJobB772026B": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -35114,6 +34983,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "MemorySize": 512,
         "Role": {
           "Fn::GetAtt": [
@@ -36765,6 +36639,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIGenerateImageServiceRoleC0428356",
@@ -36879,6 +36758,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIGenerateVideoServiceRole3DDCDDA7",
@@ -37670,6 +37554,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIInvokeFlowServiceRole61C02E4B",
@@ -38140,6 +38029,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIListVideoJobsServiceRole171468E3",
@@ -38296,6 +38190,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIOptimizePromptFunctionServiceRole408208AA",
@@ -38395,6 +38294,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIPredictServiceRole6B8A4E2C",
@@ -38516,6 +38420,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "MemorySize": 256,
         "Role": {
           "Fn::GetAtt": [
@@ -38656,6 +38565,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
           },
         },
         "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "APIBedrockSdkLayerDAE895D3",
+          },
+        ],
         "Role": {
           "Fn::GetAtt": [
             "APIPredictTitleServiceRoleAC90BDCD",
@@ -39844,6 +39758,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
             "Arn",
           ],
         },
+        "assetBucketName": "cdk-hnb659fds-assets-123456890123-us-east-1",
         "buildCommands": [
           "npm ci",
           "npm run web:build",
@@ -39851,9 +39766,15 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         "codeBuildProjectName": {
           "Ref": "ApiBuildWebProjectDF2CE9D0",
         },
-        "destinationBucketName": "cdk-hnb659fds-assets-123456890123-us-east-1",
+        "destinationBucketName": {
+          "Ref": "ApiWebS3Bucket26EF98D6",
+        },
+        "destinationKeyPrefix": "/",
+        "distributionId": {
+          "Ref": "ApiWebCloudFrontDistributionA115FBC3",
+        },
         "environment": {
-          "NODE_OPTIONS": "--max-old-space-size=4096",
+          "NODE_OPTIONS": "--max-old-space-size=15000",
           "VITE_APP_AGENT_CORE_AGENT_BUILDER_ENABLED": "true",
           "VITE_APP_AGENT_CORE_AGENT_BUILDER_RUNTIME": {
             "Fn::Join": [
@@ -40012,57 +39933,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
       "Type": "Custom::CDKNodejsBuild",
       "UpdateReplacePolicy": "Delete",
     },
-    "ApiBuildWebDeployAwsCliLayer187512BE": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "ApiBuildWeb746ABF13",
-      ],
-      "Properties": {
-        "Content": {
-          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
-          "S3Key": "HASH-REPLACED.zip",
-        },
-        "Description": "/opt/awscli/aws",
-      },
-      "Type": "AWS::Lambda::LayerVersion",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "ApiBuildWebDeployCustomResource512MiBE7E7D353": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "ApiBuildWeb746ABF13",
-      ],
-      "Properties": {
-        "DestinationBucketName": {
-          "Ref": "ApiWebS3Bucket26EF98D6",
-        },
-        "DistributionId": {
-          "Ref": "ApiWebCloudFrontDistributionA115FBC3",
-        },
-        "OutputObjectKeys": true,
-        "Prune": true,
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiB6723FB92",
-            "Arn",
-          ],
-        },
-        "SourceBucketNames": [
-          "cdk-hnb659fds-assets-123456890123-us-east-1",
-        ],
-        "SourceObjectKeys": [
-          {
-            "Fn::GetAtt": [
-              "ApiBuildWeb746ABF13",
-              "destinationObjectKey",
-            ],
-          },
-        ],
-        "WaitForDistributionInvalidation": true,
-      },
-      "Type": "Custom::CDKBucketDeployment",
-      "UpdateReplacePolicy": "Delete",
-    },
     "ApiBuildWebProjectDF2CE9D0": {
       "DeletionPolicy": "Delete",
       "Properties": {
@@ -40074,7 +39944,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         },
         "EncryptionKey": "alias/aws/s3",
         "Environment": {
-          "ComputeType": "BUILD_GENERAL1_MEDIUM",
+          "ComputeType": "BUILD_GENERAL1_LARGE",
           "Image": "aws/codebuild/standard:7.0",
           "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
@@ -40108,15 +39978,15 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         "ls -la",
         "cd \\"$current_dir\\"",
         "cd \\"$outputSourceDirectory\\"",
-        "zip -r output.zip ./",
-        "aws s3 cp output.zip \\"s3://$destinationBucketName/$destinationObjectKey\\"",
-        "\\nif [[ $outputEnvFile == \\"true\\" ]]\\nthen\\n  # Split the comma-separated string into an array\\n  for var_name in \${envNames//,/ }\\n  do\\n      echo \\"Element: $var_name\\"\\n      var_value=\\"\${!var_name}\\"\\n      echo \\"$var_name=$var_value\\" >> tmp.env\\n  done\\n\\n  aws s3 cp tmp.env \\"s3://$destinationBucketName/$envFileKey\\"\\nfi\\n              "
+        "aws s3 sync . \\"s3://$destinationBucketName/$destinationKeyPrefix\\" --delete",
+        "\\nif [[ -n \\"$distributionId\\" ]]\\nthen\\nINVALIDATION_OUTPUT=$(aws cloudfront create-invalidation --distribution-id \\"$distributionId\\" --paths \\"$distributionPath\\" --output json)\\nINVALIDATION_ID=$(echo \\"$INVALIDATION_OUTPUT\\" | jq -r '.Invalidation.Id')\\naws cloudfront wait invalidation-completed --distribution-id \\"$distributionId\\" --id \\"$INVALIDATION_ID\\"\\nfi\\n",
+        "\\nif [[ $outputEnvFile == \\"true\\" ]]\\nthen\\n  # Split the comma-separated string into an array\\n  for var_name in \${envNames//,/ }\\n  do\\n      echo \\"Element: $var_name\\"\\n      var_value=\\"\${!var_name}\\"\\n      echo \\"$var_name=$var_value\\" >> tmp.env\\n  done\\n\\n  aws s3 cp tmp.env \\"s3://$assetBucketName/$envFileKey\\"\\nfi\\n              "
       ]
     },
     "post_build": {
       "commands": [
         "echo Build completed on \`date\`",
-        "\\nSTATUS='SUCCESS'\\nif [ $CODEBUILD_BUILD_SUCCEEDING -ne 1 ] # Test if the build is failing\\nthen\\nSTATUS='FAILED'\\nREASON=\\"NodejsBuild failed. See CloudWatch Log stream for the detailed reason: \\nhttps://$AWS_REGION.console.aws.amazon.com/cloudwatch/home?region=$AWS_REGION#logsV2:log-groups/log-group/\\\\$252Faws\\\\$252Fcodebuild\\\\$252F$projectName/log-events/$CODEBUILD_LOG_PATH\\"\\nfi\\ncat <<EOF > payload.json\\n{\\n  \\"StackId\\": \\"$stackId\\",\\n  \\"RequestId\\": \\"$requestId\\",\\n  \\"LogicalResourceId\\":\\"$logicalResourceId\\",\\n  \\"PhysicalResourceId\\": \\"$logicalResourceId\\",\\n  \\"Status\\": \\"$STATUS\\",\\n  \\"Reason\\": \\"$REASON\\",\\n  \\"Data\\": {\\n    \\"destinationObjectKey\\": \\"$destinationObjectKey\\",\\n    \\"envFileKey\\": \\"$envFileKey\\"\\n  }\\n}\\nEOF\\ncurl -v -i -X PUT -H 'Content-Type:' -d \\"@payload.json\\" \\"$responseURL\\"\\n              "
+        "\\nSTATUS='SUCCESS'\\nif [ $CODEBUILD_BUILD_SUCCEEDING -ne 1 ] # Test if the build is failing\\nthen\\nSTATUS='FAILED'\\nREASON=\\"NodejsBuild failed. See CloudWatch Log stream for the detailed reason: \\nhttps://$AWS_REGION.console.aws.amazon.com/cloudwatch/home?region=$AWS_REGION#logsV2:log-groups/log-group/\\\\$252Faws\\\\$252Fcodebuild\\\\$252F$projectName/log-events/$CODEBUILD_LOG_PATH\\"\\nfi\\ncat <<EOF > payload.json\\n{\\n  \\"StackId\\": \\"$stackId\\",\\n  \\"RequestId\\": \\"$requestId\\",\\n  \\"LogicalResourceId\\":\\"$logicalResourceId\\",\\n  \\"PhysicalResourceId\\": \\"$logicalResourceId\\",\\n  \\"Status\\": \\"$STATUS\\",\\n  \\"Reason\\": \\"$REASON\\",\\n  \\"Data\\": {\\n    \\"envFileKey\\": \\"$envFileKey\\"\\n  }\\n}\\nEOF\\ncurl -i -X PUT -H 'Content-Type:' -d \\"@payload.json\\" \\"$responseURL\\"\\n              "
       ]
     }
   }
@@ -40223,37 +40093,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:GetObject*",
                 "s3:GetBucket*",
                 "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1",
-                    ],
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
                 "s3:DeleteObject*",
                 "s3:PutObject",
                 "s3:PutObjectLegalHold",
@@ -40261,6 +40100,58 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
                 "s3:PutObjectTagging",
                 "s3:PutObjectVersionTagging",
                 "s3:Abort*",
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ApiWebS3Bucket26EF98D6",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "ApiWebS3Bucket26EF98D6",
+                          "Arn",
+                        ],
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":cloudfront::123456890123:distribution/",
+                    {
+                      "Ref": "ApiWebCloudFrontDistributionA115FBC3",
+                    },
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
               ],
               "Effect": "Allow",
               "Resource": [
@@ -40868,10 +40759,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         "Tags": [
           {
             "Key": "aws-cdk:auto-delete-objects",
-            "Value": "true",
-          },
-          {
-            "Key": "aws-cdk:cr-owned:656af005",
             "Value": "true",
           },
         ],
@@ -41782,171 +41669,6 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
       "Type": "AWS::IAM::Policy",
       "UpdateReplacePolicy": "Delete",
     },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiB6723FB92": {
-      "DeletionPolicy": "Delete",
-      "DependsOn": [
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726",
-        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-      ],
-      "Properties": {
-        "Code": {
-          "S3Bucket": "cdk-hnb659fds-assets-123456890123-us-east-1",
-          "S3Key": "HASH-REPLACED.zip",
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",
-          },
-        },
-        "Handler": "index.handler",
-        "Layers": [
-          {
-            "Ref": "ApiBuildWebDeployAwsCliLayer187512BE",
-          },
-        ],
-        "MemorySize": 512,
-        "Role": {
-          "Fn::GetAtt": [
-            "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-            "Arn",
-          ],
-        },
-        "Runtime": "python3.13",
-        "Timeout": 900,
-      },
-      "Type": "AWS::Lambda::Function",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com",
-              },
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition",
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-              ],
-            ],
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Role",
-      "UpdateReplacePolicy": "Delete",
-    },
-    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726": {
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1",
-                    ],
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition",
-                      },
-                      ":s3:::cdk-hnb659fds-assets-123456890123-us-east-1/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*",
-                "s3:DeleteObject*",
-                "s3:PutObject",
-                "s3:PutObjectLegalHold",
-                "s3:PutObjectRetention",
-                "s3:PutObjectTagging",
-                "s3:PutObjectVersionTagging",
-                "s3:Abort*",
-              ],
-              "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "ApiWebS3Bucket26EF98D6",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "ApiWebS3Bucket26EF98D6",
-                          "Arn",
-                        ],
-                      },
-                      "/*",
-                    ],
-                  ],
-                },
-              ],
-            },
-            {
-              "Action": [
-                "cloudfront:GetInvalidation",
-                "cloudfront:CreateInvalidation",
-              ],
-              "Effect": "Allow",
-              "Resource": "*",
-            },
-          ],
-          "Version": "2012-10-17",
-        },
-        "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleDefaultPolicy96C3E726",
-        "Roles": [
-          {
-            "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C512MiBServiceRoleBA21DBC1",
-          },
-        ],
-      },
-      "Type": "AWS::IAM::Policy",
-      "UpdateReplacePolicy": "Delete",
-    },
     "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
       "DeletionPolicy": "Delete",
       "DependsOn": [
@@ -42182,7 +41904,7 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
             "Arn",
           ],
         },
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 300,
       },
       "Type": "AWS::Lambda::Function",

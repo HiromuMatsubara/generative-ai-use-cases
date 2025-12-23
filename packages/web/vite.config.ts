@@ -7,21 +7,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { visualizer } from 'rollup-plugin-visualizer';
 import webfontDownload from 'vite-plugin-webfont-dl';
 
+const isClosedNetwork = !!process.env.VITE_APP_COGNITO_USER_POOL_PROXY_ENDPOINT;
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  build: {
-    rollupOptions: {
-      plugins: [
-        mode === 'analyze' &&
-          visualizer({
-            open: true,
-            filename: 'dist/stats.html',
-            gzipSize: true,
-            brotliSize: true,
-          }),
-      ],
-    },
-  },
   resolve: { alias: { './runtimeConfig': './runtimeConfig.browser' } },
   plugins: [
     react(),
@@ -32,7 +20,7 @@ export default defineConfig(({ mode }) => ({
         process: true,
       },
     }),
-    webfontDownload(),
+    isClosedNetwork && webfontDownload(),
     VitePWA({
       strategies: 'generateSW',
       registerType: 'autoUpdate',
@@ -81,6 +69,13 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
+    mode === 'analyze' &&
+      visualizer({
+        open: true,
+        filename: 'dist/stats.html',
+        gzipSize: true,
+        brotliSize: true,
+      }),
   ],
   test: {
     name: 'use-case-builder',
