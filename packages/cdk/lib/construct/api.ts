@@ -1,4 +1,4 @@
-import { Stack, Duration, RemovalPolicy } from 'aws-cdk-lib';
+import { Stack, Duration, RemovalPolicy, CfnResource } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
@@ -7,11 +7,18 @@ import {
   RestApi,
   ResponseType,
   EndpointType,
+  MethodOptions,
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import { IFunction, LayerVersion, Code } from 'aws-cdk-lib/aws-lambda';
+import {
+  IFunction,
+  LayerVersion,
+  ILayerVersion,
+  Code,
+} from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
+import { NodejsFunction as RawNodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IdentityPool } from 'aws-cdk-lib/aws-cognito-identitypool';
 import {
@@ -173,6 +180,77 @@ export class Api extends Construct {
       code: Code.fromAsset(path.join(__dirname, '../../lambda-layer')),
       description: 'Bedrock SDK Layer',
     });
+
+    // Lambda Web Adapter Layer
+    const lwaLayer: ILayerVersion = LayerVersion.fromLayerVersionArn(
+      this,
+      'LwaLayer',
+      `arn:aws:lambda:${Stack.of(this).region}:753240598075:layer:LambdaAdapterLayerX86:25`
+    );
+
+    // API Handler (Express Monolith)
+    const apiHandler = new RawNodejsFunction(this, 'ApiHandler', {
+      runtime: LAMBDA_RUNTIME_NODEJS,
+      layers: [bedrockSdkLayer, lwaLayer],
+      entry: path.join(__dirname, '../../lambda/api/index.ts'),
+      timeout: Duration.minutes(15),
+      memorySize: 1024,
+      environment: {
+        AWS_LAMBDA_EXEC_WRAPPER: '/opt/bootstrap',
+        PORT: '8080',
+        USER_POOL_ID: userPool.userPoolId,
+        USER_POOL_CLIENT_ID: userPoolClient.userPoolClientId,
+        USER_POOL_PROXY_ENDPOINT: props.cognitoUserPoolProxyEndpoint ?? '',
+        MODEL_REGION: modelRegion,
+        MODEL_IDS: JSON.stringify(modelIds),
+        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
+        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
+        BUILTIN_AGENTS_JSON: builtinAgentsJson,
+        CUSTOM_AGENTS_JSON: customAgentsJson,
+        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
+        BUCKET_NAME: fileBucket.bucketName,
+        TABLE_NAME: table.tableName,
+        STATS_TABLE_NAME: props.statsTable.tableName,
+        KNOWLEDGE_BASE_ID: knowledgeBaseId ?? '',
+        VIDEO_BUCKET_REGION_MAP: JSON.stringify(props.videoBucketRegionMap),
+        QUERY_DECOMPOSITION_ENABLED: JSON.stringify(queryDecompositionEnabled),
+        RERANKING_MODEL_ID: rerankingModelId ?? '',
+        ...(props.guardrailIdentify
+          ? { GUARDRAIL_IDENTIFIER: props.guardrailIdentify }
+          : {}),
+        ...(props.guardrailVersion
+          ? { GUARDRAIL_VERSION: props.guardrailVersion }
+          : {}),
+      },
+      bundling: {
+        nodeModules: [
+          '@aws-sdk/client-bedrock-runtime',
+          '@aws-sdk/client-bedrock-agent-runtime',
+          '@aws-sdk/client-sagemaker-runtime',
+          'express',
+        ],
+        commandHooks: {
+          beforeBundling(inputDir: string, outputDir: string): string[] {
+            return [
+              `cp ${inputDir}/packages/cdk/lambda/api/run.sh ${outputDir}/`,
+            ];
+          },
+          beforeInstall: () => [],
+          afterBundling: () => [],
+        },
+      },
+      vpc,
+      securityGroups,
+    });
+
+    (apiHandler.node.defaultChild as CfnResource).addPropertyOverride(
+      'Handler',
+      'run.sh'
+    );
+
+    table.grantReadWriteData(apiHandler);
+    props.statsTable.grantReadWriteData(apiHandler);
+    fileBucket.grantReadWrite(apiHandler);
 
     // Lambda
     const predictFunction = new NodejsFunction(this, 'Predict', {
@@ -510,9 +588,8 @@ export class Api extends Construct {
       }
     }
 
-    // If SageMaker Endpoint exists, grant permission
+    // Grant permissions to API handler
     if (endpointNames.length > 0) {
-      // SageMaker Policy
       const sagemakerPolicy = new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['sagemaker:DescribeEndpoint', 'sagemaker:InvokeEndpoint'],
@@ -523,6 +600,7 @@ export class Api extends Construct {
             }:endpoint/${endpointName.modelId}`
         ),
       });
+      apiHandler.role?.addToPrincipalPolicy(sagemakerPolicy);
       predictFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
       predictTitleFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
@@ -532,8 +610,6 @@ export class Api extends Construct {
       invokeFlowFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
     }
 
-    // Bedrock is always granted permission
-    // Bedrock Policy
     if (
       typeof crossAccountBedrockRoleArn !== 'string' ||
       crossAccountBedrockRoleArn === ''
@@ -549,6 +625,7 @@ export class Api extends Construct {
           'aws-marketplace:ViewSubscriptions',
         ],
       });
+      apiHandler.role?.addToPrincipalPolicy(bedrockPolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(bedrockPolicy);
       predictFunction.role?.addToPrincipalPolicy(bedrockPolicy);
       predictTitleFunction.role?.addToPrincipalPolicy(bedrockPolicy);
@@ -558,7 +635,6 @@ export class Api extends Construct {
       invokeFlowFunction.role?.addToPrincipalPolicy(bedrockPolicy);
       optimizePromptFunction.role?.addToPrincipalPolicy(bedrockPolicy);
     } else {
-      // Policy for when crossAccountBedrockRoleArn is specified
       const logsPolicy = new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['logs:*'],
@@ -569,6 +645,8 @@ export class Api extends Construct {
         actions: ['sts:AssumeRole'],
         resources: [crossAccountBedrockRoleArn],
       });
+      apiHandler.role?.addToPrincipalPolicy(logsPolicy);
+      apiHandler.role?.addToPrincipalPolicy(assumeRolePolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(logsPolicy);
       predictFunction.role?.addToPrincipalPolicy(logsPolicy);
       predictTitleFunction.role?.addToPrincipalPolicy(logsPolicy);
@@ -581,267 +659,17 @@ export class Api extends Construct {
       generateImageFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
       generateVideoFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
       listVideoJobs.role?.addToPrincipalPolicy(assumeRolePolicy);
-      // To get pre-signed URL from S3 in different account
       getFileDownloadSignedUrlFunction.role?.addToPrincipalPolicy(
         assumeRolePolicy
       );
     }
-
-    const createChatFunction = new NodejsFunction(this, 'CreateChat', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/createChat.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantWriteData(createChatFunction);
-
-    const deleteChatFunction = new NodejsFunction(this, 'DeleteChat', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/deleteChat.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(deleteChatFunction);
-
-    const createMessagesFunction = new NodejsFunction(this, 'CreateMessages', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/createMessages.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-        STATS_TABLE_NAME: props.statsTable.tableName,
-        BUCKET_NAME: fileBucket.bucketName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(createMessagesFunction);
-    props.statsTable.grantReadWriteData(createMessagesFunction);
-
-    const updateChatTitleFunction = new NodejsFunction(
-      this,
-      'UpdateChatTitle',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/updateTitle.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          TABLE_NAME: table.tableName,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    table.grantReadWriteData(updateChatTitleFunction);
-
-    const listChatsFunction = new NodejsFunction(this, 'ListChats', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/listChats.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(listChatsFunction);
-
-    const findChatbyIdFunction = new NodejsFunction(this, 'FindChatbyId', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/findChatById.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(findChatbyIdFunction);
-
-    const listMessagesFunction = new NodejsFunction(this, 'ListMessages', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/listMessages.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(listMessagesFunction);
-
-    const updateFeedbackFunction = new NodejsFunction(this, 'UpdateFeedback', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/updateFeedback.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(updateFeedbackFunction);
-
-    const getWebTextFunction = new NodejsFunction(this, 'GetWebText', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/getWebText.ts',
-      timeout: Duration.minutes(15),
-      vpc,
-      securityGroups,
-    });
-
-    const createShareId = new NodejsFunction(this, 'CreateShareId', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/createShareId.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(createShareId);
-
-    const getSharedChat = new NodejsFunction(this, 'GetSharedChat', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/getSharedChat.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(getSharedChat);
-
-    const findShareId = new NodejsFunction(this, 'FindShareId', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/findShareId.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(findShareId);
-
-    const deleteShareId = new NodejsFunction(this, 'DeleteShareId', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/deleteShareId.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(deleteShareId);
-
-    const listSystemContextsFunction = new NodejsFunction(
-      this,
-      'ListSystemContexts',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/listSystemContexts.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          TABLE_NAME: table.tableName,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    table.grantReadData(listSystemContextsFunction);
-
-    const createSystemContextFunction = new NodejsFunction(
-      this,
-      'CreateSystemContexts',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/createSystemContext.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          TABLE_NAME: table.tableName,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    table.grantWriteData(createSystemContextFunction);
-
-    const updateSystemContextTitleFunction = new NodejsFunction(
-      this,
-      'UpdateSystemContextTitle',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/updateSystemContextTitle.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          TABLE_NAME: table.tableName,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    table.grantReadWriteData(updateSystemContextTitleFunction);
-
-    const deleteSystemContextFunction = new NodejsFunction(
-      this,
-      'DeleteSystemContexts',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/deleteSystemContext.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          TABLE_NAME: table.tableName,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    table.grantReadWriteData(deleteSystemContextFunction);
-
-    const deleteFileFunction = new NodejsFunction(this, 'DeleteFileFunction', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/deleteFile.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        BUCKET_NAME: fileBucket.bucketName,
-      },
-      vpc,
-      securityGroups,
-    });
-    fileBucket.grantDelete(deleteFileFunction);
-
-    // Lambda function for getting token usage
-    const getTokenUsageFunction = new NodejsFunction(this, 'GetTokenUsage', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/getTokenUsage.ts',
-      environment: {
-        TABLE_NAME: table.tableName,
-        STATS_TABLE_NAME: props.statsTable.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadData(getTokenUsageFunction);
-    props.statsTable.grantReadData(getTokenUsageFunction);
 
     // API Gateway
     const authorizer = new CognitoUserPoolsAuthorizer(this, 'Authorizer', {
       cognitoUserPools: [userPool],
     });
 
-    const commonAuthorizerProps = {
+    const commonAuthorizerProps: Partial<MethodOptions> = {
       authorizationType: AuthorizationType.COGNITO,
       authorizer,
     };
@@ -853,9 +681,9 @@ export class Api extends Construct {
       defaultCorsPreflightOptions: {
         allowOrigins: Cors.ALL_ORIGINS,
         allowMethods: Cors.ALL_METHODS,
+        allowCredentials: true,
       },
       cloudWatchRole: true,
-      defaultMethodOptions: commonAuthorizerProps,
       endpointConfiguration: vpc
         ? {
             types: [EndpointType.PRIVATE],
@@ -883,241 +711,31 @@ export class Api extends Construct {
         : undefined,
     });
 
+    const errorHeaders = {
+      'Access-Control-Allow-Origin': 'method.request.header.origin',
+      'Access-Control-Allow-Methods': "'*'",
+      'Access-Control-Allow-Credentials': "'true'",
+      'Cache-Control': "'no-cache, no-store, must-revalidate'",
+    };
+
     api.addGatewayResponse('Api4XX', {
       type: ResponseType.DEFAULT_4XX,
-      responseHeaders: {
-        'Access-Control-Allow-Origin': "'*'",
-      },
+      responseHeaders: errorHeaders,
     });
 
     api.addGatewayResponse('Api5XX', {
       type: ResponseType.DEFAULT_5XX,
-      responseHeaders: {
-        'Access-Control-Allow-Origin': "'*'",
-      },
+      responseHeaders: errorHeaders,
     });
 
-    const predictResource = api.root.addResource('predict');
+    const lambdaIntegration = new LambdaIntegration(apiHandler, {
+      proxy: true,
+    });
 
-    // POST: /predict
-    predictResource.addMethod(
-      'POST',
-      new LambdaIntegration(predictFunction),
-      commonAuthorizerProps
-    );
-
-    // POST: /predict/title
-    const predictTitleResource = predictResource.addResource('title');
-    predictTitleResource.addMethod(
-      'POST',
-      new LambdaIntegration(predictTitleFunction),
-      commonAuthorizerProps
-    );
-
-    const chatsResource = api.root.addResource('chats');
-
-    // POST: /chats
-    chatsResource.addMethod(
-      'POST',
-      new LambdaIntegration(createChatFunction),
-      commonAuthorizerProps
-    );
-
-    // GET: /chats
-    chatsResource.addMethod(
-      'GET',
-      new LambdaIntegration(listChatsFunction),
-      commonAuthorizerProps
-    );
-
-    const chatResource = chatsResource.addResource('{chatId}');
-
-    // GET: /chats/{chatId}
-    chatResource.addMethod(
-      'GET',
-      new LambdaIntegration(findChatbyIdFunction),
-      commonAuthorizerProps
-    );
-
-    // DELETE: /chats/{chatId}
-    chatResource.addMethod(
-      'DELETE',
-      new LambdaIntegration(deleteChatFunction),
-      commonAuthorizerProps
-    );
-
-    const titleResource = chatResource.addResource('title');
-
-    // PUT: /chats/{chatId}/title
-    titleResource.addMethod(
-      'PUT',
-      new LambdaIntegration(updateChatTitleFunction),
-      commonAuthorizerProps
-    );
-
-    const messagesResource = chatResource.addResource('messages');
-
-    // GET: /chats/{chatId}/messages
-    messagesResource.addMethod(
-      'GET',
-      new LambdaIntegration(listMessagesFunction),
-      commonAuthorizerProps
-    );
-
-    // POST: /chats/{chatId}/messages
-    messagesResource.addMethod(
-      'POST',
-      new LambdaIntegration(createMessagesFunction),
-      commonAuthorizerProps
-    );
-
-    const systemContextsResource = api.root.addResource('systemcontexts');
-
-    // POST: /systemcontexts
-    systemContextsResource.addMethod(
-      'POST',
-      new LambdaIntegration(createSystemContextFunction),
-      commonAuthorizerProps
-    );
-
-    // GET: /systemcontexts
-    systemContextsResource.addMethod(
-      'GET',
-      new LambdaIntegration(listSystemContextsFunction),
-      commonAuthorizerProps
-    );
-
-    const systemContextResource =
-      systemContextsResource.addResource('{systemContextId}');
-
-    // DELETE: /systemcontexts/{systemContextId}
-    systemContextResource.addMethod(
-      'DELETE',
-      new LambdaIntegration(deleteSystemContextFunction),
-      commonAuthorizerProps
-    );
-
-    const systemContextTitleResource =
-      systemContextResource.addResource('title');
-
-    // PUT: /systemcontexts/{systemContextId}/title
-    systemContextTitleResource.addMethod(
-      'PUT',
-      new LambdaIntegration(updateSystemContextTitleFunction),
-      commonAuthorizerProps
-    );
-
-    const feedbacksResource = chatResource.addResource('feedbacks');
-
-    // POST: /chats/{chatId}/feedbacks
-    feedbacksResource.addMethod(
-      'POST',
-      new LambdaIntegration(updateFeedbackFunction),
-      commonAuthorizerProps
-    );
-
-    const imageResource = api.root.addResource('image');
-    const imageGenerateResource = imageResource.addResource('generate');
-    // POST: /image/generate
-    imageGenerateResource.addMethod(
-      'POST',
-      new LambdaIntegration(generateImageFunction),
-      commonAuthorizerProps
-    );
-
-    const videoResource = api.root.addResource('video');
-    const videoGenerateResource = videoResource.addResource('generate');
-    // POST: /video/generate
-    videoGenerateResource.addMethod(
-      'POST',
-      new LambdaIntegration(generateVideoFunction),
-      commonAuthorizerProps
-    );
-    // GET: /video/generate
-    videoGenerateResource.addMethod(
-      'GET',
-      new LambdaIntegration(listVideoJobs),
-      commonAuthorizerProps
-    );
-    const videoJobResource = videoGenerateResource.addResource('{createdDate}');
-    // DELETE: /video/generate/{createdDate}
-    videoJobResource.addMethod(
-      'DELETE',
-      new LambdaIntegration(deleteVideoJob),
-      commonAuthorizerProps
-    );
-
-    // Used in the web content extraction use case
-    const webTextResource = api.root.addResource('web-text');
-    // GET: /web-text
-    webTextResource.addMethod(
-      'GET',
-      new LambdaIntegration(getWebTextFunction),
-      commonAuthorizerProps
-    );
-
-    const shareResource = api.root.addResource('shares');
-    const shareChatIdResource = shareResource
-      .addResource('chat')
-      .addResource('{chatId}');
-    // GET: /shares/chat/{chatId}
-    shareChatIdResource.addMethod(
-      'GET',
-      new LambdaIntegration(findShareId),
-      commonAuthorizerProps
-    );
-    // POST: /shares/chat/{chatId}
-    shareChatIdResource.addMethod(
-      'POST',
-      new LambdaIntegration(createShareId),
-      commonAuthorizerProps
-    );
-    const shareShareIdResource = shareResource
-      .addResource('share')
-      .addResource('{shareId}');
-    // GET: /shares/share/{shareId}
-    shareShareIdResource.addMethod(
-      'GET',
-      new LambdaIntegration(getSharedChat),
-      commonAuthorizerProps
-    );
-    // DELETE: /shares/share/{shareId}
-    shareShareIdResource.addMethod(
-      'DELETE',
-      new LambdaIntegration(deleteShareId),
-      commonAuthorizerProps
-    );
-
-    const fileResource = api.root.addResource('file');
-    const urlResource = fileResource.addResource('url');
-    // POST: /file/url
-    urlResource.addMethod(
-      'POST',
-      new LambdaIntegration(getSignedUrlFunction),
-      commonAuthorizerProps
-    );
-    // Get: /file/url
-    urlResource.addMethod(
-      'GET',
-      new LambdaIntegration(getFileDownloadSignedUrlFunction),
-      commonAuthorizerProps
-    );
-    // DELETE: /file/{fileName}
-    fileResource
-      .addResource('{fileName}')
-      .addMethod(
-        'DELETE',
-        new LambdaIntegration(deleteFileFunction),
-        commonAuthorizerProps
-      );
-
-    // GET: /token-usage
-    const tokenUsageResource = api.root.addResource('token-usage');
-    tokenUsageResource.addMethod(
-      'GET',
-      new LambdaIntegration(getTokenUsageFunction),
-      commonAuthorizerProps
-    );
+    api.root.addProxy({
+      defaultIntegration: lambdaIntegration,
+      defaultMethodOptions: commonAuthorizerProps,
+    });
 
     this.api = api;
     this.predictStreamFunction = predictStreamFunction;

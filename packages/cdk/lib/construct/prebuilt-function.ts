@@ -2,7 +2,7 @@ import {
   Function,
   FunctionProps,
   Code,
-  LayerVersion,
+  ILayerVersion,
 } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as path from 'path';
@@ -11,7 +11,7 @@ export interface PrebuiltFunctionProps
   extends Omit<FunctionProps, 'code' | 'handler'> {
   readonly entry?: string;
   readonly handler?: string;
-  readonly layers?: LayerVersion[];
+  readonly layers?: ILayerVersion[];
 
   // Unused for
   readonly bundling?: {
