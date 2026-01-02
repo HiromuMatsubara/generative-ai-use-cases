@@ -57,6 +57,12 @@ import { router as webTextRouter } from './routes/webText';
 import { router as sharesRouter } from './routes/shares';
 import { router as fileRouter } from './routes/file';
 import { router as tokenUsageRouter } from './routes/tokenUsage';
+import { router as useCasesRouter } from './routes/useCases';
+import { router as ragRouter } from './routes/rag';
+import { router as ragKnowledgeBaseRouter } from './routes/ragKnowledgeBase';
+import { router as agentBuilderRouter } from './routes/agentBuilder';
+import { router as transcribeRouter } from './routes/transcribe';
+import { router as speechToSpeechRouter } from './routes/speechToSpeech';
 
 // Mount routes
 app.use('/predict', predictRouter);
@@ -68,6 +74,12 @@ app.use('/web-text', webTextRouter);
 app.use('/shares', sharesRouter);
 app.use('/file', fileRouter);
 app.use('/token-usage', tokenUsageRouter);
+app.use('/usecases', useCasesRouter);
+app.use('/rag', ragRouter);
+app.use('/rag-knowledge-base', ragKnowledgeBaseRouter);
+app.use('/agents', agentBuilderRouter);
+app.use('/transcribe', transcribeRouter);
+app.use('/speech-to-speech', speechToSpeechRouter);
 
 // Error handler
 app.use(

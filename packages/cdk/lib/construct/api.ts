@@ -10,12 +10,7 @@ import {
   MethodOptions,
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
-import {
-  IFunction,
-  LayerVersion,
-  ILayerVersion,
-  Code,
-} from 'aws-cdk-lib/aws-lambda';
+import { LayerVersion, ILayerVersion, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
 import { NodejsFunction as RawNodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -50,7 +45,6 @@ import {
 import * as path from 'path';
 
 export interface BackendApiProps {
-  // Context Params
   readonly modelRegion: string;
   readonly modelIds: ModelConfiguration[];
   readonly imageGenerationModelIds: ModelConfiguration[];
@@ -61,11 +55,6 @@ export interface BackendApiProps {
   readonly rerankingModelId?: string | null;
   readonly customAgents: Agent[];
   readonly crossAccountBedrockRoleArn?: string | null;
-  readonly allowedIpV4AddressRanges?: string[] | null;
-  readonly allowedIpV6AddressRanges?: string[] | null;
-  readonly additionalS3Buckets?: Bucket[];
-
-  // Resource
   readonly userPool: UserPool;
   readonly idPool: IdentityPool;
   readonly userPoolClient: UserPoolClient;
@@ -75,12 +64,29 @@ export interface BackendApiProps {
   readonly agents?: string;
   readonly guardrailIdentify?: string;
   readonly guardrailVersion?: string;
-
-  // Closed network
   readonly vpc?: IVpc;
   readonly securityGroups?: ISecurityGroup[];
   readonly apiGatewayVpcEndpoint?: InterfaceVpcEndpoint;
   readonly cognitoUserPoolProxyEndpoint?: string;
+  // RAG
+  readonly kendraIndexId?: string;
+  readonly kendraIndexLanguage?: string;
+  readonly knowledgeBaseDataSourceBucketName?: string;
+  readonly dataSourceBucketName?: string;
+  // Use Case Builder / Agent Builder
+  readonly useCaseBuilderTable?: Table;
+  readonly useCaseIdIndexName?: string;
+  readonly agentBuilderRuntimeArn?: string;
+  // Transcribe
+  readonly audioBucket?: Bucket;
+  readonly transcriptBucket?: Bucket;
+  // Speech to Speech
+  readonly speechToSpeechTaskFunctionArn?: string;
+  readonly speechToSpeechModelIds?: ModelConfiguration[];
+  // IP restrictions
+  readonly allowedIpV4AddressRanges?: string[];
+  readonly allowedIpV6AddressRanges?: string[];
+  readonly additionalS3Buckets?: Bucket[];
 }
 
 export class Api extends Construct {
@@ -95,7 +101,6 @@ export class Api extends Construct {
   readonly endpointNames: ModelConfiguration[];
   readonly agents: AgentInfo[];
   readonly fileBucket: Bucket;
-  readonly getFileDownloadSignedUrlFunction: IFunction;
 
   constructor(scope: Construct, id: string, props: BackendApiProps) {
     super(scope, id);
@@ -118,7 +123,7 @@ export class Api extends Construct {
       securityGroups,
       apiGatewayVpcEndpoint,
     } = props;
-    // Pass both agents sources as separate JSON strings to Lambda
+
     const builtinAgentsJson = props.agents || '[]';
     const customAgentsJson = JSON.stringify(props.customAgents);
 
@@ -145,7 +150,6 @@ export class Api extends Construct {
       throw new Error(`Unsupported Model Name: ${rerankingModelId}`);
     }
 
-    // We don't support using the same model ID accross multiple regions
     const duplicateModelIds = new Set(
       [...modelIds, ...imageGenerationModelIds, ...videoGenerationModelIds]
         .map((m) => m.modelId)
@@ -158,7 +162,7 @@ export class Api extends Construct {
       );
     }
 
-    // S3 (File Bucket)
+    // S3 File Bucket
     const fileBucket = new Bucket(this, 'FileBucket', {
       encryption: BucketEncryption.S3_MANAGED,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -215,6 +219,21 @@ export class Api extends Construct {
         VIDEO_BUCKET_REGION_MAP: JSON.stringify(props.videoBucketRegionMap),
         QUERY_DECOMPOSITION_ENABLED: JSON.stringify(queryDecompositionEnabled),
         RERANKING_MODEL_ID: rerankingModelId ?? '',
+        // RAG Kendra
+        INDEX_ID: props.kendraIndexId ?? '',
+        LANGUAGE: props.kendraIndexLanguage ?? 'ja',
+        // Use Case Builder / Agent Builder
+        USECASE_TABLE_NAME: props.useCaseBuilderTable?.tableName ?? '',
+        USECASE_ID_INDEX_NAME: props.useCaseIdIndexName ?? '',
+        // Transcribe
+        AUDIO_BUCKET_NAME: props.audioBucket?.bucketName ?? '',
+        TRANSCRIPT_BUCKET_NAME: props.transcriptBucket?.bucketName ?? '',
+        // Speech to Speech
+        SPEECH_TO_SPEECH_TASK_FUNCTION_ARN:
+          props.speechToSpeechTaskFunctionArn ?? '',
+        SPEECH_TO_SPEECH_MODEL_IDS: JSON.stringify(
+          props.speechToSpeechModelIds ?? []
+        ),
         ...(props.guardrailIdentify
           ? { GUARDRAIL_IDENTIFIER: props.guardrailIdentify }
           : {}),
@@ -227,6 +246,7 @@ export class Api extends Construct {
           '@aws-sdk/client-bedrock-runtime',
           '@aws-sdk/client-bedrock-agent-runtime',
           '@aws-sdk/client-sagemaker-runtime',
+          '@aws-sdk/client-lambda',
           'express',
         ],
         commandHooks: {
@@ -252,32 +272,89 @@ export class Api extends Construct {
     props.statsTable.grantReadWriteData(apiHandler);
     fileBucket.grantReadWrite(apiHandler);
 
-    // Lambda
-    const predictFunction = new NodejsFunction(this, 'Predict', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      layers: [bedrockSdkLayer],
-      entry: './lambda/predict.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        MODEL_REGION: modelRegion,
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-        ...(props.guardrailIdentify
-          ? { GUARDRAIL_IDENTIFIER: props.guardrailIdentify }
-          : {}),
-        ...(props.guardrailVersion
-          ? { GUARDRAIL_VERSION: props.guardrailVersion }
-          : {}),
-      },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
-      vpc,
-      securityGroups,
-    });
+    // Grant DynamoDB access for Use Case Builder table
+    if (props.useCaseBuilderTable) {
+      props.useCaseBuilderTable.grantReadWriteData(apiHandler);
+    }
 
+    // Grant S3 access for Transcribe buckets
+    if (props.audioBucket && apiHandler.role) {
+      props.audioBucket.grantReadWrite(apiHandler);
+      // Add IP restrictions for audio bucket
+      allowS3AccessWithSourceIpCondition(
+        props.audioBucket.bucketName,
+        apiHandler.role,
+        'write',
+        {
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
+        }
+      );
+    }
+    if (props.transcriptBucket && apiHandler.role) {
+      props.transcriptBucket.grantReadWrite(apiHandler);
+      // Add IP restrictions for transcript bucket
+      allowS3AccessWithSourceIpCondition(
+        props.transcriptBucket.bucketName,
+        apiHandler.role,
+        'read',
+        {
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
+        }
+      );
+    }
+
+    // Grant Transcribe permissions
+    apiHandler.role?.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['transcribe:*'],
+        resources: ['*'],
+      })
+    );
+
+    // Grant Lambda invoke permission for Speech to Speech
+    if (props.speechToSpeechTaskFunctionArn) {
+      apiHandler.role?.addToPrincipalPolicy(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: ['lambda:InvokeFunction'],
+          resources: [props.speechToSpeechTaskFunctionArn],
+        })
+      );
+    }
+
+    // Grant Cognito permissions for Agent Builder
+    apiHandler.role?.addToPrincipalPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: [userPool.userPoolArn],
+        actions: ['cognito-idp:AdminGetUser'],
+      })
+    );
+
+    // Grant S3 access for video buckets
+    for (const region of Object.keys(props.videoBucketRegionMap)) {
+      const bucketName = props.videoBucketRegionMap[region];
+      apiHandler.role?.addToPrincipalPolicy(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          actions: [
+            's3:PutObject',
+            's3:GetObject',
+            's3:DeleteObject',
+            's3:ListBucket',
+          ],
+          resources: [
+            `arn:aws:s3:::${bucketName}`,
+            `arn:aws:s3:::${bucketName}/*`,
+          ],
+        })
+      );
+    }
+
+    // Lambda functions for direct invocation (not via API Gateway)
     const predictStreamFunction = new NodejsFunction(this, 'PredictStream', {
       runtime: LAMBDA_RUNTIME_NODEJS,
       layers: [bedrockSdkLayer],
@@ -310,7 +387,6 @@ export class Api extends Construct {
         nodeModules: [
           '@aws-sdk/client-bedrock-runtime',
           '@aws-sdk/client-bedrock-agent-runtime',
-          // The default version of client-sagemaker-runtime does not support StreamingResponse, so specify the version in package.json for bundling
           '@aws-sdk/client-sagemaker-runtime',
         ],
       },
@@ -320,7 +396,6 @@ export class Api extends Construct {
     fileBucket.grantReadWrite(predictStreamFunction);
     predictStreamFunction.grantInvoke(idPool.authenticatedRole);
 
-    // Add Flow Lambda Function
     const invokeFlowFunction = new NodejsFunction(this, 'InvokeFlow', {
       runtime: LAMBDA_RUNTIME_NODEJS,
       layers: [bedrockSdkLayer],
@@ -339,89 +414,6 @@ export class Api extends Construct {
       securityGroups,
     });
     invokeFlowFunction.grantInvoke(idPool.authenticatedRole);
-
-    const predictTitleFunction = new NodejsFunction(this, 'PredictTitle', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      layers: [bedrockSdkLayer],
-      entry: './lambda/predictTitle.ts',
-      timeout: Duration.minutes(15),
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
-      environment: {
-        TABLE_NAME: table.tableName,
-        MODEL_REGION: modelRegion,
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-        ...(props.guardrailIdentify
-          ? { GUARDRAIL_IDENTIFIER: props.guardrailIdentify }
-          : {}),
-        ...(props.guardrailVersion
-          ? { GUARDRAIL_VERSION: props.guardrailVersion }
-          : {}),
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantWriteData(predictTitleFunction);
-
-    const generateImageFunction = new NodejsFunction(this, 'GenerateImage', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      layers: [bedrockSdkLayer],
-      entry: './lambda/generateImage.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        MODEL_REGION: modelRegion,
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-      },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
-      vpc,
-      securityGroups,
-    });
-
-    const generateVideoFunction = new NodejsFunction(this, 'GenerateVideo', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      layers: [bedrockSdkLayer],
-      entry: './lambda/generateVideo.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        MODEL_REGION: modelRegion,
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        VIDEO_BUCKET_OWNER: Stack.of(this).account,
-        VIDEO_BUCKET_REGION_MAP: JSON.stringify(props.videoBucketRegionMap),
-        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-        BUCKET_NAME: fileBucket.bucketName,
-        TABLE_NAME: table.tableName,
-      },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
-      vpc,
-      securityGroups,
-    });
-    for (const region of Object.keys(props.videoBucketRegionMap)) {
-      const bucketName = props.videoBucketRegionMap[region];
-      generateVideoFunction.role?.addToPrincipalPolicy(
-        new PolicyStatement({
-          effect: Effect.ALLOW,
-          actions: ['s3:PutObject'],
-          resources: [
-            `arn:aws:s3:::${bucketName}`,
-            `arn:aws:s3:::${bucketName}/*`,
-          ],
-        })
-      );
-    }
-    table.grantWriteData(generateVideoFunction);
 
     const copyVideoJob = new NodejsFunction(this, 'CopyVideoJob', {
       runtime: LAMBDA_RUNTIME_NODEJS,
@@ -461,46 +453,6 @@ export class Api extends Construct {
     fileBucket.grantWrite(copyVideoJob);
     table.grantWriteData(copyVideoJob);
 
-    const listVideoJobs = new NodejsFunction(this, 'ListVideoJobs', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      layers: [bedrockSdkLayer],
-      entry: './lambda/listVideoJobs.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        MODEL_REGION: modelRegion,
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        VIDEO_BUCKET_REGION_MAP: JSON.stringify(props.videoBucketRegionMap),
-        CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-        BUCKET_NAME: fileBucket.bucketName,
-        TABLE_NAME: table.tableName,
-        COPY_VIDEO_JOB_FUNCTION_ARN: copyVideoJob.functionArn,
-      },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantReadWriteData(listVideoJobs);
-    copyVideoJob.grantInvoke(listVideoJobs);
-
-    const deleteVideoJob = new NodejsFunction(this, 'DeleteVideoJob', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/deleteVideoJob.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        MODEL_IDS: JSON.stringify(modelIds),
-        IMAGE_GENERATION_MODEL_IDS: JSON.stringify(imageGenerationModelIds),
-        VIDEO_GENERATION_MODEL_IDS: JSON.stringify(videoGenerationModelIds),
-        TABLE_NAME: table.tableName,
-      },
-      vpc,
-      securityGroups,
-    });
-    table.grantWriteData(deleteVideoJob);
-
     const optimizePromptFunction = new NodejsFunction(
       this,
       'OptimizePromptFunction',
@@ -521,93 +473,92 @@ export class Api extends Construct {
     );
     optimizePromptFunction.grantInvoke(idPool.authenticatedRole);
 
-    const getSignedUrlFunction = new NodejsFunction(this, 'GetSignedUrl', {
-      runtime: LAMBDA_RUNTIME_NODEJS,
-      entry: './lambda/getFileUploadSignedUrl.ts',
-      timeout: Duration.minutes(15),
-      environment: {
-        BUCKET_NAME: fileBucket.bucketName,
-      },
-      vpc,
-      securityGroups,
-    });
-    // Grant S3 write permissions with source IP condition
-    if (getSignedUrlFunction.role) {
+    // Grant S3 permissions to apiHandler with IP restrictions
+    if (apiHandler.role) {
       allowS3AccessWithSourceIpCondition(
         fileBucket.bucketName,
-        getSignedUrlFunction.role,
+        apiHandler.role,
         'write',
         {
-          ipv4: props.allowedIpV4AddressRanges,
-          ipv6: props.allowedIpV6AddressRanges,
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
         }
       );
-    }
-
-    const getFileDownloadSignedUrlFunction = new NodejsFunction(
-      this,
-      'GetFileDownloadSignedUrlFunction',
-      {
-        runtime: LAMBDA_RUNTIME_NODEJS,
-        entry: './lambda/getFileDownloadSignedUrl.ts',
-        timeout: Duration.minutes(15),
-        environment: {
-          CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
-          MODEL_REGION: modelRegion,
-        },
-        vpc,
-        securityGroups,
-      }
-    );
-    // Grant S3 read permissions with source IP condition
-    if (getFileDownloadSignedUrlFunction.role) {
-      // Default bucket permissions
       allowS3AccessWithSourceIpCondition(
         fileBucket.bucketName,
-        getFileDownloadSignedUrlFunction.role,
+        apiHandler.role,
         'read',
         {
-          ipv4: props.allowedIpV4AddressRanges,
-          ipv6: props.allowedIpV6AddressRanges,
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
         }
       );
-
-      // Additional buckets permissions (AgentCore, external buckets, etc.)
+      // Additional buckets permissions
       if (props.additionalS3Buckets) {
         props.additionalS3Buckets.forEach((bucket) => {
           allowS3AccessWithSourceIpCondition(
             bucket.bucketName,
-            getFileDownloadSignedUrlFunction.role!,
+            apiHandler.role!,
             'read',
             {
-              ipv4: props.allowedIpV4AddressRanges,
-              ipv6: props.allowedIpV6AddressRanges,
+              ipv4: props.allowedIpV4AddressRanges || [],
+              ipv6: props.allowedIpV6AddressRanges || [],
             }
           );
         });
       }
     }
 
-    // Grant permissions to API handler
     if (endpointNames.length > 0) {
       const sagemakerPolicy = new PolicyStatement({
         effect: Effect.ALLOW,
         actions: ['sagemaker:DescribeEndpoint', 'sagemaker:InvokeEndpoint'],
         resources: endpointNames.map(
           (endpointName) =>
-            `arn:aws:sagemaker:${endpointName.region}:${
-              Stack.of(this).account
-            }:endpoint/${endpointName.modelId}`
+            `arn:aws:sagemaker:${endpointName.region}:${Stack.of(this).account}:endpoint/${endpointName.modelId}`
         ),
       });
       apiHandler.role?.addToPrincipalPolicy(sagemakerPolicy);
-      predictFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
-      predictTitleFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
-      generateImageFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
-      generateVideoFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
-      listVideoJobs.role?.addToPrincipalPolicy(sagemakerPolicy);
       invokeFlowFunction.role?.addToPrincipalPolicy(sagemakerPolicy);
+    }
+
+    // Grant Kendra permissions if Kendra Index ID is provided
+    if (props.kendraIndexId) {
+      const kendraIndexArn = `arn:aws:kendra:${Stack.of(this).region}:${Stack.of(this).account}:index/${props.kendraIndexId}`;
+      apiHandler.role?.addToPrincipalPolicy(
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          resources: [kendraIndexArn],
+          actions: ['kendra:Query', 'kendra:Retrieve'],
+        })
+      );
+    }
+
+    // Allow downloading files from Knowledge Base data source bucket
+    if (props.knowledgeBaseDataSourceBucketName && apiHandler.role) {
+      allowS3AccessWithSourceIpCondition(
+        props.knowledgeBaseDataSourceBucketName,
+        apiHandler.role,
+        'read',
+        {
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
+        }
+      );
+    }
+
+    // Allow downloading files from RAG data source bucket
+    if (props.dataSourceBucketName && apiHandler.role) {
+      allowS3AccessWithSourceIpCondition(
+        props.dataSourceBucketName,
+        apiHandler.role,
+        'read',
+        {
+          ipv4: props.allowedIpV4AddressRanges || [],
+          ipv6: props.allowedIpV6AddressRanges || [],
+        }
+      );
     }
 
     if (
@@ -627,11 +578,6 @@ export class Api extends Construct {
       });
       apiHandler.role?.addToPrincipalPolicy(bedrockPolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(bedrockPolicy);
-      predictFunction.role?.addToPrincipalPolicy(bedrockPolicy);
-      predictTitleFunction.role?.addToPrincipalPolicy(bedrockPolicy);
-      generateImageFunction.role?.addToPrincipalPolicy(bedrockPolicy);
-      generateVideoFunction.role?.addToPrincipalPolicy(bedrockPolicy);
-      listVideoJobs.role?.addToPrincipalPolicy(bedrockPolicy);
       invokeFlowFunction.role?.addToPrincipalPolicy(bedrockPolicy);
       optimizePromptFunction.role?.addToPrincipalPolicy(bedrockPolicy);
     } else {
@@ -648,20 +594,7 @@ export class Api extends Construct {
       apiHandler.role?.addToPrincipalPolicy(logsPolicy);
       apiHandler.role?.addToPrincipalPolicy(assumeRolePolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(logsPolicy);
-      predictFunction.role?.addToPrincipalPolicy(logsPolicy);
-      predictTitleFunction.role?.addToPrincipalPolicy(logsPolicy);
-      generateImageFunction.role?.addToPrincipalPolicy(logsPolicy);
-      generateVideoFunction.role?.addToPrincipalPolicy(logsPolicy);
-      listVideoJobs.role?.addToPrincipalPolicy(logsPolicy);
       predictStreamFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
-      predictFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
-      predictTitleFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
-      generateImageFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
-      generateVideoFunction.role?.addToPrincipalPolicy(assumeRolePolicy);
-      listVideoJobs.role?.addToPrincipalPolicy(assumeRolePolicy);
-      getFileDownloadSignedUrlFunction.role?.addToPrincipalPolicy(
-        assumeRolePolicy
-      );
     }
 
     // API Gateway
@@ -746,9 +679,7 @@ export class Api extends Construct {
     this.imageGenerationModelIds = imageGenerationModelIds;
     this.videoGenerationModelIds = videoGenerationModelIds;
     this.endpointNames = endpointNames;
-    // Don't create this.agents - frontend will combine remoteAgentsJson and customAgentsJson
     this.agents = [];
     this.fileBucket = fileBucket;
-    this.getFileDownloadSignedUrlFunction = getFileDownloadSignedUrlFunction;
   }
 }

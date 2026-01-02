@@ -10,39 +10,26 @@ const lambdaDir = path.join(__dirname, '../lambda');
 const outDir = path.join(__dirname, '../lambda-dist');
 
 // Lambda functions - nodeModules are in Lambda Layer
+// Only functions that are directly invoked (not via API Gateway)
 const lambdaConfigs = [
-  { entry: 'predict.ts' },
+  // Predict
   { entry: 'predictStream.ts' },
+
+  // Flow
   { entry: 'invokeFlow.ts' },
-  { entry: 'predictTitle.ts' },
-  { entry: 'generateImage.ts' },
-  { entry: 'generateVideo.ts' },
-  { entry: 'copyVideoJob.ts' },
-  { entry: 'listVideoJobs.ts' },
-  { entry: 'deleteVideoJob.ts' },
   { entry: 'optimizePrompt.ts' },
-  { entry: 'getFileUploadSignedUrl.ts' },
-  { entry: 'getFileDownloadSignedUrl.ts' },
-  { entry: 'queryKendra.ts' },
-  { entry: 'retrieveKendra.ts' },
-  { entry: 'retrieveKnowledgeBase.ts' },
-  { entry: 'getTranscription.ts' },
-  { entry: 'startTranscription.ts' },
-  { entry: 'checkEmailDomain.ts' },
-  { entry: 'agent.ts' },
+
+  // Speech
   { entry: 'speechToSpeechTask.ts' },
-  { entry: 'startSpeechToSpeechSession.ts' },
-  { entry: 'agentBuilder.ts' },
-  { entry: 'useCaseBuilder/listUseCases.ts' },
-  { entry: 'useCaseBuilder/listFavoriteUseCases.ts' },
-  { entry: 'useCaseBuilder/getUseCase.ts' },
-  { entry: 'useCaseBuilder/createUseCase.ts' },
-  { entry: 'useCaseBuilder/updateUseCase.ts' },
-  { entry: 'useCaseBuilder/deleteUseCase.ts' },
-  { entry: 'useCaseBuilder/toggleFavorite.ts' },
-  { entry: 'useCaseBuilder/toggleShared.ts' },
-  { entry: 'useCaseBuilder/listRecentlyUsedUseCases.ts' },
-  { entry: 'useCaseBuilder/updateRecentlyUsedUseCase.ts' },
+
+  // Agent
+  { entry: 'agent.ts' },
+
+  // Helper functions
+  { entry: 'checkEmailDomain.ts' },
+
+  // Video job processing (async)
+  { entry: 'copyVideoJob.ts' },
 ];
 
 // Clean output directory

@@ -6,21 +6,18 @@ import {
   Web,
   Database,
   Rag,
-  RagKnowledgeBase,
   Transcribe,
   CommonWebAcl,
   SpeechToSpeech,
   McpApi,
   AgentCore,
+  UseCaseBuilder,
 } from './construct';
 import { loadMCPConfig, extractSafeMCPConfig } from './utils/mcp-config-loader';
 import { CfnWebACLAssociation } from 'aws-cdk-lib/aws-wafv2';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { UseCaseBuilder } from './construct/use-case-builder';
-import { AgentBuilder } from './construct/agent-builder';
 import { ProcessedStackInput } from './stack-input';
-import { allowS3AccessWithSourceIpCondition } from './utils/s3-access-policy';
 import {
   InterfaceVpcEndpoint,
   IVpc,
@@ -139,6 +136,48 @@ export class GenerativeAiUseCasesStack extends Stack {
     // Database
     const database = new Database(this, 'Database');
 
+    let useCaseBuilder: UseCaseBuilder | undefined;
+    if (params.useCaseBuilderEnabled || params.agentBuilderEnabled) {
+      useCaseBuilder = new UseCaseBuilder(this, 'UseCaseBuilder');
+    }
+
+    // RAG (if enabled)
+    let rag: Rag | undefined;
+    if (params.ragEnabled) {
+      rag = new Rag(this, 'Rag', {
+        envSuffix: params.env,
+        kendraIndexLanguage: params.kendraIndexLanguage,
+        kendraIndexArnInCdkContext: params.kendraIndexArn,
+        kendraDataSourceBucketName: params.kendraDataSourceBucketName,
+        kendraIndexScheduleEnabled: params.kendraIndexScheduleEnabled,
+        kendraIndexScheduleCreateCron: params.kendraIndexScheduleCreateCron,
+        kendraIndexScheduleDeleteCron: params.kendraIndexScheduleDeleteCron,
+        userPoolProviderUrl: auth.userPool.userPoolProviderUrl,
+        vpc: props.vpc,
+        securityGroups,
+      });
+    }
+
+    // Transcribe
+    const transcribe = new Transcribe(this, 'Transcribe', {
+      userPool: auth.userPool,
+      idPool: auth.idPool,
+      allowedIpV4AddressRanges: params.allowedIpV4AddressRanges,
+      allowedIpV6AddressRanges: params.allowedIpV6AddressRanges,
+      vpc: props.vpc,
+      securityGroups,
+    });
+
+    // SpeechToSpeech (for bidirectional communication)
+    const speechToSpeech = new SpeechToSpeech(this, 'SpeechToSpeech', {
+      envSuffix: params.env,
+      userPool: auth.userPool,
+      speechToSpeechModelIds: params.speechToSpeechModelIds,
+      crossAccountBedrockRoleArn: params.crossAccountBedrockRoleArn,
+      vpc: props.vpc,
+      securityGroups,
+    });
+
     // API
     const api = new Api(this, 'API', {
       modelRegion: params.modelRegion,
@@ -151,11 +190,6 @@ export class GenerativeAiUseCasesStack extends Stack {
       queryDecompositionEnabled: params.queryDecompositionEnabled,
       rerankingModelId: params.rerankingModelId,
       crossAccountBedrockRoleArn: params.crossAccountBedrockRoleArn,
-      allowedIpV4AddressRanges: params.allowedIpV4AddressRanges,
-      allowedIpV6AddressRanges: params.allowedIpV6AddressRanges,
-      additionalS3Buckets: props.agentCoreStack?.fileBucket
-        ? [props.agentCoreStack.fileBucket]
-        : undefined,
       userPool: auth.userPool,
       idPool: auth.idPool,
       userPoolClient: auth.client,
@@ -169,6 +203,20 @@ export class GenerativeAiUseCasesStack extends Stack {
       securityGroups,
       apiGatewayVpcEndpoint: props.apiGatewayVpcEndpoint,
       cognitoUserPoolProxyEndpoint: props.cognitoUserPoolProxyEndpoint,
+      // RAG Kendra
+      kendraIndexId: rag?.kendraIndexId,
+      kendraIndexLanguage: rag?.kendraIndexLanguage,
+      // Use Case Builder / Agent Builder
+      useCaseBuilderTable: useCaseBuilder?.useCaseBuilderTable,
+      useCaseIdIndexName: useCaseBuilder?.useCaseIdIndexName,
+      agentBuilderRuntimeArn,
+      // Transcribe
+      audioBucket: transcribe.audioBucket,
+      transcriptBucket: transcribe.transcriptBucket,
+      // Speech to Speech
+      speechToSpeechTaskFunctionArn:
+        speechToSpeech.speechToSpeechTaskFunctionArn,
+      speechToSpeechModelIds: params.speechToSpeechModelIds,
     });
 
     // WAF
@@ -192,17 +240,6 @@ export class GenerativeAiUseCasesStack extends Stack {
         webAclArn: regionalWaf.webAclArn,
       });
     }
-
-    // SpeechToSpeech (for bidirectional communication)
-    const speechToSpeech = new SpeechToSpeech(this, 'SpeechToSpeech', {
-      envSuffix: params.env,
-      api: api.api,
-      userPool: auth.userPool,
-      speechToSpeechModelIds: params.speechToSpeechModelIds,
-      crossAccountBedrockRoleArn: params.crossAccountBedrockRoleArn,
-      vpc: props.vpc,
-      securityGroups,
-    });
 
     // Load MCP configuration for Web frontend
     const mcpServers = loadMCPConfig(
@@ -311,7 +348,9 @@ export class GenerativeAiUseCasesStack extends Stack {
       brandingConfig: params.brandingConfig,
     });
 
-    // RAG
+    // RAG - API Gateway integration removed (now in API Monolith)
+    // Lambda functions still created for backend processing if needed
+    /*
     if (params.ragEnabled) {
       const rag = new Rag(this, 'Rag', {
         envSuffix: params.env,
@@ -326,27 +365,11 @@ export class GenerativeAiUseCasesStack extends Stack {
         vpc: props.vpc,
         securityGroups,
       });
-
-      // Allow downloading files from the File API to the data source Bucket
-      // If you are importing existing Kendra, there is a possibility that the data source is not S3
-      // In that case, rag.dataSourceBucketName will be undefined and the permission will not be granted
-      if (
-        rag.dataSourceBucketName &&
-        api.getFileDownloadSignedUrlFunction.role
-      ) {
-        allowS3AccessWithSourceIpCondition(
-          rag.dataSourceBucketName,
-          api.getFileDownloadSignedUrlFunction.role,
-          'read',
-          {
-            ipv4: params.allowedIpV4AddressRanges,
-            ipv6: params.allowedIpV6AddressRanges,
-          }
-        );
-      }
     }
+    */
 
-    // RAG Knowledge Base
+    // RAG Knowledge Base - API Gateway integration removed (now in API Monolith)
+    /*
     if (params.ragKnowledgeBaseEnabled) {
       const knowledgeBaseId =
         params.ragKnowledgeBaseId || props.knowledgeBaseId;
@@ -360,25 +383,12 @@ export class GenerativeAiUseCasesStack extends Stack {
           vpc: props.vpc,
           securityGroups,
         });
-        // Allow downloading files from the File API to the data source Bucket
-        if (
-          props.knowledgeBaseDataSourceBucketName &&
-          api.getFileDownloadSignedUrlFunction.role
-        ) {
-          allowS3AccessWithSourceIpCondition(
-            props.knowledgeBaseDataSourceBucketName,
-            api.getFileDownloadSignedUrlFunction.role,
-            'read',
-            {
-              ipv4: params.allowedIpV4AddressRanges,
-              ipv6: params.allowedIpV6AddressRanges,
-            }
-          );
-        }
       }
     }
+    */
 
-    // UseCaseBuilder - create only if UseCaseBuilder or AgentBuilder is enabled
+    // UseCaseBuilder - API Gateway integration removed (now in API Monolith)
+    /*
     let useCaseBuilder: UseCaseBuilder | undefined;
     if (params.useCaseBuilderEnabled || params.agentBuilderEnabled) {
       useCaseBuilder = new UseCaseBuilder(this, 'UseCaseBuilder', {
@@ -389,8 +399,10 @@ export class GenerativeAiUseCasesStack extends Stack {
         useCaseBuilderEnabled: params.useCaseBuilderEnabled,
       });
     }
+    */
 
-    // Agent Builder (if enabled and runtime is available)
+    // Agent Builder - API Gateway integration removed (now in API Monolith)
+    /*
     if (
       params.agentBuilderEnabled &&
       agentBuilderRuntimeArn &&
@@ -407,8 +419,10 @@ export class GenerativeAiUseCasesStack extends Stack {
         cognitoUserPoolProxyEndpoint: props.cognitoUserPoolProxyEndpoint,
       });
     }
+    */
 
-    // Transcribe
+    // Transcribe - API Gateway integration removed (now in API Monolith)
+    /*
     new Transcribe(this, 'Transcribe', {
       userPool: auth.userPool,
       idPool: auth.idPool,
@@ -418,6 +432,7 @@ export class GenerativeAiUseCasesStack extends Stack {
       vpc: props.vpc,
       securityGroups,
     });
+    */
 
     // Cfn Outputs
     new CfnOutput(this, 'Region', {
