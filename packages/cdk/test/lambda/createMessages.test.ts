@@ -1,10 +1,13 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler } from '../../lambda/createMessages';
-import { batchCreateMessages, findChatById } from '../../lambda/repository';
+import { handler } from '../../lambda/api/services/createMessages';
+import {
+  batchCreateMessages,
+  findChatById,
+} from '../../lambda/api/services/repository';
 import { RecordedMessage, ToBeRecordedMessage } from 'generative-ai-use-cases';
 
 // Mock the repository
-jest.mock('../../lambda/repository');
+jest.mock('../../lambda/api/services/repository');
 const mockedBatchCreateMessages = batchCreateMessages as jest.MockedFunction<
   typeof batchCreateMessages
 >;

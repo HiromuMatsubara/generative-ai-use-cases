@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as generateImageHandler } from '../../generateImage';
+import { handler as generateImageHandler } from '../services/generateImage';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

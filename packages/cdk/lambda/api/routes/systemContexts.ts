@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as listSystemContextsHandler } from '../../listSystemContexts';
-import { handler as createSystemContextHandler } from '../../createSystemContext';
-import { handler as deleteSystemContextHandler } from '../../deleteSystemContext';
-import { handler as updateSystemContextTitleHandler } from '../../updateSystemContextTitle';
+import { handler as listSystemContextsHandler } from '../services/listSystemContexts';
+import { handler as createSystemContextHandler } from '../services/createSystemContext';
+import { handler as deleteSystemContextHandler } from '../services/deleteSystemContext';
+import { handler as updateSystemContextTitleHandler } from '../services/updateSystemContextTitle';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

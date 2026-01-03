@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as findShareIdHandler } from '../../findShareId';
-import { handler as createShareIdHandler } from '../../createShareId';
-import { handler as getSharedChatHandler } from '../../getSharedChat';
-import { handler as deleteShareIdHandler } from '../../deleteShareId';
+import { handler as findShareIdHandler } from '../services/findShareId';
+import { handler as createShareIdHandler } from '../services/createShareId';
+import { handler as getSharedChatHandler } from '../services/getSharedChat';
+import { handler as deleteShareIdHandler } from '../services/deleteShareId';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

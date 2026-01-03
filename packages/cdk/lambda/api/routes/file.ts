@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as getSignedUrlHandler } from '../../getFileUploadSignedUrl';
-import { handler as getFileDownloadSignedUrlHandler } from '../../getFileDownloadSignedUrl';
-import { handler as deleteFileHandler } from '../../deleteFile';
+import { handler as getSignedUrlHandler } from '../services/getFileUploadSignedUrl';
+import { handler as getFileDownloadSignedUrlHandler } from '../services/getFileDownloadSignedUrl';
+import { handler as deleteFileHandler } from '../services/deleteFile';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

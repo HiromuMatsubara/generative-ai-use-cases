@@ -1,10 +1,13 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler } from '../../lambda/createShareId';
-import { createShareId, findChatById } from '../../lambda/repository';
+import { handler } from '../../lambda/api/services/createShareId';
+import {
+  createShareId,
+  findChatById,
+} from '../../lambda/api/services/repository';
 import { ShareId, UserIdAndChatId } from 'generative-ai-use-cases';
 
 // Mock the repository
-jest.mock('../../lambda/repository');
+jest.mock('../../lambda/api/services/repository');
 const mockedCreateShareId = createShareId as jest.MockedFunction<
   typeof createShareId
 >;

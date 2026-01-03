@@ -1,2 +1,2 @@
 #!/bin/sh
-exec node index.js
+exec node index.mjs

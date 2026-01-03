@@ -6,12 +6,8 @@ import {
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
-import { VideoJob } from 'generative-ai-use-cases';
-import { updateJobStatus } from './repositoryVideoJob';
-
-export interface CopyVideoJobParams {
-  job: VideoJob;
-}
+import { CopyVideoJobParams } from 'generative-ai-use-cases';
+import { updateJobStatus } from './api/services/repositoryVideoJob';
 
 const BUCKET_NAME: string = process.env.BUCKET_NAME!;
 const videoBucketRegionMap = JSON.parse(

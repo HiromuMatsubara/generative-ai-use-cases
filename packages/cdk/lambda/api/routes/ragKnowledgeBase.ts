@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { createEvent, sendResponse } from './helpers';
-import { handler as retrieveKnowledgeBaseHandler } from '../../retrieveKnowledgeBase';
+import { handler as retrieveKnowledgeBaseHandler } from '../services/retrieveKnowledgeBase';
 
 export const router = Router();
 

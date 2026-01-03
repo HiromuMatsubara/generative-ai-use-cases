@@ -10,18 +10,18 @@ import {
   VideoJob,
   ListVideoJobsResponse,
   GenerateVideoRequest,
+  CopyVideoJobParams,
 } from 'generative-ai-use-cases';
 import {
   GetAsyncInvokeCommand,
   ValidationException,
 } from '@aws-sdk/client-bedrock-runtime';
-import { CopyVideoJobParams } from './copyVideoJob';
 import {
   LambdaClient,
   InvokeCommand,
   InvocationType,
 } from '@aws-sdk/client-lambda';
-import { initBedrockRuntimeClient } from './utils/bedrockClient';
+import { initBedrockRuntimeClient } from '../utils/bedrockClient';
 
 const BUCKET_NAME: string = process.env.BUCKET_NAME!;
 const TABLE_NAME: string = process.env.TABLE_NAME!;

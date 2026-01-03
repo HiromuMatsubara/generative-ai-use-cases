@@ -1,5 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler } from '../../lambda/getWebText';
+import { handler } from '../../lambda/api/services/getWebText';
 
 // Mock the DNS lookup function
 jest.mock('util', () => ({

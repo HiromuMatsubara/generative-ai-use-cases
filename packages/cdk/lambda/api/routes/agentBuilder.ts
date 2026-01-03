@@ -10,9 +10,9 @@ import {
   handleCloneAgent,
   handleListFavoriteAgents,
   handleToggleAgentFavorite,
-} from '../../agentBuilder/handlers/agent-handlers';
-import { validateAndParseRequestBody } from '../../agentBuilder/validation/request-validation';
-import { getUserIdFromEvent } from '../../agentBuilder/utils/auth-utils';
+} from '../services/agentBuilder/handlers/agent-handlers';
+import { validateAndParseRequestBody } from '../services/agentBuilder/validation/request-validation';
+import { getUserIdFromEvent } from '../services/agentBuilder/utils/auth-utils';
 import { createEvent } from './helpers';
 import {
   CreateAgentRequest,

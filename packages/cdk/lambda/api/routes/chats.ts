@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as createChatHandler } from '../../createChat';
-import { handler as listChatsHandler } from '../../listChats';
-import { handler as findChatByIdHandler } from '../../findChatById';
-import { handler as deleteChatHandler } from '../../deleteChat';
-import { handler as updateTitleHandler } from '../../updateTitle';
-import { handler as listMessagesHandler } from '../../listMessages';
-import { handler as createMessagesHandler } from '../../createMessages';
-import { handler as updateFeedbackHandler } from '../../updateFeedback';
+import { handler as createChatHandler } from '../services/createChat';
+import { handler as listChatsHandler } from '../services/listChats';
+import { handler as findChatByIdHandler } from '../services/findChatById';
+import { handler as deleteChatHandler } from '../services/deleteChat';
+import { handler as updateTitleHandler } from '../services/updateTitle';
+import { handler as listMessagesHandler } from '../services/listMessages';
+import { handler as createMessagesHandler } from '../services/createMessages';
+import { handler as updateFeedbackHandler } from '../services/updateFeedback';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

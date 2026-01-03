@@ -3,8 +3,8 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { createEvent, sendResponse } from './helpers';
 
 // Import handlers - converted to ES modules
-import { handler as queryKendraHandler } from '../../queryKendra';
-import { handler as retrieveKendraHandler } from '../../retrieveKendra';
+import { handler as queryKendraHandler } from '../services/queryKendra';
+import { handler as retrieveKendraHandler } from '../services/retrieveKendra';
 
 export const router = Router();
 

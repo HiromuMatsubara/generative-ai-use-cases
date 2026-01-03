@@ -1,15 +1,15 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as listUseCasesHandler } from '../../useCaseBuilder/listUseCases';
-import { handler as listFavoriteUseCasesHandler } from '../../useCaseBuilder/listFavoriteUseCases';
-import { handler as getUseCaseHandler } from '../../useCaseBuilder/getUseCase';
-import { handler as createUseCaseHandler } from '../../useCaseBuilder/createUseCase';
-import { handler as updateUseCaseHandler } from '../../useCaseBuilder/updateUseCase';
-import { handler as deleteUseCaseHandler } from '../../useCaseBuilder/deleteUseCase';
-import { handler as toggleFavoriteHandler } from '../../useCaseBuilder/toggleFavorite';
-import { handler as toggleSharedHandler } from '../../useCaseBuilder/toggleShared';
-import { handler as listRecentlyUsedUseCasesHandler } from '../../useCaseBuilder/listRecentlyUsedUseCases';
-import { handler as updateRecentlyUsedUseCaseHandler } from '../../useCaseBuilder/updateRecentlyUsedUseCase';
+import { handler as listUseCasesHandler } from '../services/useCaseBuilder/listUseCases';
+import { handler as listFavoriteUseCasesHandler } from '../services/useCaseBuilder/listFavoriteUseCases';
+import { handler as getUseCaseHandler } from '../services/useCaseBuilder/getUseCase';
+import { handler as createUseCaseHandler } from '../services/useCaseBuilder/createUseCase';
+import { handler as updateUseCaseHandler } from '../services/useCaseBuilder/updateUseCase';
+import { handler as deleteUseCaseHandler } from '../services/useCaseBuilder/deleteUseCase';
+import { handler as toggleFavoriteHandler } from '../services/useCaseBuilder/toggleFavorite';
+import { handler as toggleSharedHandler } from '../services/useCaseBuilder/toggleShared';
+import { handler as listRecentlyUsedUseCasesHandler } from '../services/useCaseBuilder/listRecentlyUsedUseCases';
+import { handler as updateRecentlyUsedUseCaseHandler } from '../services/useCaseBuilder/updateRecentlyUsedUseCase';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

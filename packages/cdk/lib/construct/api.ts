@@ -1,4 +1,4 @@
-import { Stack, Duration, RemovalPolicy, CfnResource } from 'aws-cdk-lib';
+import { Stack, Duration, RemovalPolicy } from 'aws-cdk-lib';
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
@@ -13,7 +13,6 @@ import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { LayerVersion, ILayerVersion, Code } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { PrebuiltFunction as NodejsFunction } from './prebuilt-function';
-import { NodejsFunction as RawNodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IdentityPool } from 'aws-cdk-lib/aws-cognito-identitypool';
 import {
@@ -193,10 +192,11 @@ export class Api extends Construct {
     );
 
     // API Handler (Express Monolith)
-    const apiHandler = new RawNodejsFunction(this, 'ApiHandler', {
+    const apiHandler = new NodejsFunction(this, 'ApiHandler', {
       runtime: LAMBDA_RUNTIME_NODEJS,
       layers: [bedrockSdkLayer, lwaLayer],
-      entry: path.join(__dirname, '../../lambda/api/index.ts'),
+      entry: './lambda/api/index.ts',
+      handler: 'run.sh',
       timeout: Duration.minutes(15),
       memorySize: 1024,
       environment: {
@@ -241,32 +241,9 @@ export class Api extends Construct {
           ? { GUARDRAIL_VERSION: props.guardrailVersion }
           : {}),
       },
-      bundling: {
-        nodeModules: [
-          '@aws-sdk/client-bedrock-runtime',
-          '@aws-sdk/client-bedrock-agent-runtime',
-          '@aws-sdk/client-sagemaker-runtime',
-          '@aws-sdk/client-lambda',
-          'express',
-        ],
-        commandHooks: {
-          beforeBundling(inputDir: string, outputDir: string): string[] {
-            return [
-              `cp ${inputDir}/packages/cdk/lambda/api/run.sh ${outputDir}/`,
-            ];
-          },
-          beforeInstall: () => [],
-          afterBundling: () => [],
-        },
-      },
       vpc,
       securityGroups,
     });
-
-    (apiHandler.node.defaultChild as CfnResource).addPropertyOverride(
-      'Handler',
-      'run.sh'
-    );
 
     table.grantReadWriteData(apiHandler);
     props.statsTable.grantReadWriteData(apiHandler);

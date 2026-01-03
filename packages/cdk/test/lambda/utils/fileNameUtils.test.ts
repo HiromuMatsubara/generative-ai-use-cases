@@ -1,5 +1,5 @@
 /* eslint-disable i18nhelper/no-jp-string */
-import { convertToSafeFilename } from '../../../lambda/utils/fileNameUtils';
+import { convertToSafeFilename } from '../../../lambda/api/utils/fileNameUtils';
 
 describe('convertToSafeFilename', () => {
   it('should return filename without hash when only ASCII characters', () => {

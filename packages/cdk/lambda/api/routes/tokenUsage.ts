@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { handler as getTokenUsageHandler } from '../../getTokenUsage';
+import { handler as getTokenUsageHandler } from '../services/getTokenUsage';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

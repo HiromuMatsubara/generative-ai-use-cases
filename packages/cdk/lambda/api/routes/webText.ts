@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as getWebTextHandler } from '../../getWebText';
+import { handler as getWebTextHandler } from '../services/getWebText';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();

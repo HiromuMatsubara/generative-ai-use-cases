@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { handler as generateVideoHandler } from '../../generateVideo';
-import { handler as listVideoJobsHandler } from '../../listVideoJobs';
-import { handler as deleteVideoJobHandler } from '../../deleteVideoJob';
+import { handler as generateVideoHandler } from '../services/generateVideo';
+import { handler as listVideoJobsHandler } from '../services/listVideoJobs';
+import { handler as deleteVideoJobHandler } from '../services/deleteVideoJob';
 import { createEvent, sendResponse } from './helpers';
 
 export const router = Router();
