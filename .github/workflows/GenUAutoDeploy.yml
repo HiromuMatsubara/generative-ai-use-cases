@@ -12,6 +12,10 @@ jobs:
   deploy:
     if: github.event.label.name == 'auto-deploy'
     runs-on: ubuntu-latest
+    outputs:
+      web-url: ${{ steps.deploy.outputs.web-url }}
+      env-name: ${{ steps.deploy.outputs.env-name }}
+      stack-arn: ${{ steps.deploy.outputs.stack-arn }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,6 +38,7 @@ jobs:
         run: npx -w packages/cdk cdk bootstrap
 
       - name: Deploy
+        id: deploy
         run: |
           ENV_NAME="pr-${{ github.event.pull_request.number }}"
           echo "Deploying environment: ${ENV_NAME}"
