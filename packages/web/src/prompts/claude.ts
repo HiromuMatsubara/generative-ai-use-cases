@@ -604,29 +604,34 @@ Output only the selected chart type from the <Choice> list, with an exact match,
       return params.customPrompt;
     }
 
-    const diagramInstruction = `
-
-## Diagram Guidelines (Mermaid)
-When appropriate, include Mermaid diagrams to visualize:
-- Meeting flow and discussion progression (flowchart)
-- Decision trees and outcomes
-- Task assignments and responsibilities (mindmap)
-- Timeline of events or deadlines (timeline or gantt)
-- Relationships between topics or participants
-
-Use the following format for diagrams:
-\`\`\`mermaid
-[diagram code here]
-\`\`\`
-
-Only include diagrams when they genuinely help understand the content. Do not force diagrams if the content doesn't warrant visualization.`;
-
     switch (params.style) {
+      case 'summary':
+        return `As a professional meeting facilitator, create a concise summary of the meeting focusing on:
+- Main discussion topics and their context
+- Key decisions made and their rationale
+- Action items with owners (if mentioned)
+- Important deadlines or next steps
+- Any unresolved issues or follow-up items needed
+
+Keep the summary structured and easy to scan. Write in the same language as the received transcript.`;
+
+      case 'detail':
+        return `As a professional secretary, create a comprehensive meeting record that includes:
+- Meeting overview (purpose, participants if mentioned, date/time if mentioned)
+- Detailed discussion flow with speaker attributions when identifiable
+- Background context and reasoning for decisions
+- All action items, decisions, and commitments made
+- Questions raised and their answers
+- Any concerns, risks, or blockers discussed
+- Next steps and follow-up actions
+
+Preserve the depth and nuance of discussions while organizing the content logically. Write in the same language as the received transcript.`;
+
       case 'newspaper':
-        return `As a professional journalist. You will receive transcribed text from reporters and craft an article while preserving as much of the original content volume as possible to deliver comprehensive information to your audience. For your audience, you must write the article in received text language.${diagramInstruction}`;
+        return `As a professional journalist. You will receive transcribed text from reporters and craft an article while preserving as much of the original content volume as possible to deliver comprehensive information to your audience. For your audience, you must write the article in received text language.`;
 
       case 'faq':
-        return `As a professional assistant, please identify the conversation topic and write an abstract summarizing the theme along with question-and-answer pairs that preserve the original information content as much as possible. For your boss, you must write in received conversation language.${diagramInstruction}`;
+        return `As a professional assistant, please identify the conversation topic and write an abstract summarizing the theme along with question-and-answer pairs that preserve the original information content as much as possible. For your boss, you must write in received conversation language.`;
 
       case 'diagram': {
         const diagramTypes: string[] = [];
@@ -691,7 +696,7 @@ ${MERMAID_SPECIAL_CHARS_WARNING}
 
       case 'transcription':
       default:
-        return `As a professional translator, please correct filler words and misrecognition in received transcribed text. Please add paragraph breaks if you detect obvious topic changes, and if you find important statements related to the topic, please format them in bold style. For speakers, you must transcribe in received text language.${diagramInstruction}`;
+        return `As a professional translator, please correct filler words and misrecognition in received transcribed text. Please add paragraph breaks if you detect obvious topic changes, and if you find important statements related to the topic, please format them in bold style. For speakers, you must transcribe in received text language.`;
     }
   },
 };
