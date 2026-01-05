@@ -446,7 +446,7 @@ const userData = await getUserData(userId);
 const chatHistory = await getChatHistory(chatId);
 ```
 
-### 11. 認可処理
+### 10. 認可処理
 
 **概要**: userIdを取得してデータアクセスを制御し、ユーザーが自分のデータのみにアクセスできるようにする
 

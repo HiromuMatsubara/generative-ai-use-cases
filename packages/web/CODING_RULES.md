@@ -416,5 +416,3 @@ const filteredMessages = useMemo(() => {
   return messages.filter(msg => msg.role === 'user');
 }, [messages]);
 ```
-
-### 9. パフォーマンス最適化

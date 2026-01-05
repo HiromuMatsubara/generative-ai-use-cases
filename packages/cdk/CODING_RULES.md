@@ -25,7 +25,7 @@ packages/cdk/
 #### ファイル配置ルール
 
 - **Stack**: `lib/` 直下に配置（例: `lib/genu-stack.ts`）
-- **Construct**: `lib/construct/` 配下に配置（例: `lib/construct/auth-construct.ts`）
+- **Construct**: `lib/construct/` 配下に配置（例: `lib/construct/auth.ts`）
 - **Lambda関数**: 言語別にディレクトリ分け
   - TypeScript/JavaScript: `lambda/`（基本はこちらを使用）
   - Python: `lambda-python/`（Pythonでしか実装できない機能のみ）
@@ -451,7 +451,7 @@ if (!enableRag) {
 }
 ```
 
-### 10. カスタムリソース
+### 9. カスタムリソース
 
 **概要**: 既存のCDK Constructを最優先で使用し、カスタムリソースは最終手段として使用する
 
