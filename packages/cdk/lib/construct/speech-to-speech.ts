@@ -81,9 +81,6 @@ export class SpeechToSpeech extends Construct {
         SPEECH_TO_SPEECH_MODEL_IDS: JSON.stringify(speechToSpeechModelIds),
         CROSS_ACCOUNT_BEDROCK_ROLE_ARN: props.crossAccountBedrockRoleArn ?? '',
       },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
-      },
       memorySize: 512,
       vpc: props.vpc,
       securityGroups: props.securityGroups,

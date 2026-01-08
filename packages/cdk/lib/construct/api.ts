@@ -360,13 +360,6 @@ export class Api extends Construct {
         QUERY_DECOMPOSITION_ENABLED: JSON.stringify(queryDecompositionEnabled),
         RERANKING_MODEL_ID: rerankingModelId ?? '',
       },
-      bundling: {
-        nodeModules: [
-          '@aws-sdk/client-bedrock-runtime',
-          '@aws-sdk/client-bedrock-agent-runtime',
-          '@aws-sdk/client-sagemaker-runtime',
-        ],
-      },
       vpc,
       securityGroups,
     });
@@ -378,12 +371,6 @@ export class Api extends Construct {
       layers: [bedrockSdkLayer],
       entry: './lambda/invokeFlow.ts',
       timeout: Duration.minutes(15),
-      bundling: {
-        nodeModules: [
-          '@aws-sdk/client-bedrock-runtime',
-          '@aws-sdk/client-bedrock-agent-runtime',
-        ],
-      },
       environment: {
         MODEL_REGION: modelRegion,
       },
@@ -407,9 +394,6 @@ export class Api extends Construct {
         CROSS_ACCOUNT_BEDROCK_ROLE_ARN: crossAccountBedrockRoleArn ?? '',
         BUCKET_NAME: fileBucket.bucketName,
         TABLE_NAME: table.tableName,
-      },
-      bundling: {
-        nodeModules: ['@aws-sdk/client-bedrock-runtime'],
       },
       vpc,
       securityGroups,
@@ -438,9 +422,6 @@ export class Api extends Construct {
         layers: [bedrockSdkLayer],
         entry: './lambda/optimizePrompt.ts',
         timeout: Duration.minutes(15),
-        bundling: {
-          nodeModules: ['@aws-sdk/client-bedrock-agent-runtime'],
-        },
         environment: {
           MODEL_REGION: modelRegion,
         },
