@@ -40,6 +40,21 @@ app.use(
       } catch (e) {
         console.error('Failed to parse request context:', e);
       }
+    } else {
+      // Local development: Mock API Gateway event
+      req.apiGateway = {
+        event: {
+          requestContext: {
+            authorizer: {
+              claims: {
+                sub: 'local-user-id',
+                'cognito:username': 'local-user',
+                email: 'local@example.com',
+              },
+            },
+          },
+        },
+      };
     }
     next();
   }

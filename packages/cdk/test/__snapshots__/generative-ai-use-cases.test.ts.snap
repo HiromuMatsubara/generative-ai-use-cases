@@ -5175,6 +5175,16 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         ],
       },
     },
+    "AudioBucketName": {
+      "Value": {
+        "Ref": "TranscribeAudioBucket39DFF290",
+      },
+    },
+    "BucketName": {
+      "Value": {
+        "Ref": "APIFileBucket8FB29855",
+      },
+    },
     "EndpointNames": {
       "Value": "[]",
     },
@@ -5207,6 +5217,11 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
     },
     "ImageGenerateModelIds": {
       "Value": "[{"modelId":"stability.stable-diffusion-xl-v1","region":"us-east-1"}]",
+    },
+    "IndexId": {
+      "Value": {
+        "Ref": "RagKendraIndexFEF3924C",
+      },
     },
     "InlineAgents": {
       "Value": "false",
@@ -5250,6 +5265,9 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         ],
       },
     },
+    "QueryDecompositionEnabled": {
+      "Value": "false",
+    },
     "RagEnabled": {
       "Value": "true",
     },
@@ -5258,6 +5276,9 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
     },
     "Region": {
       "Value": "us-east-1",
+    },
+    "RerankingModelId": {
+      "Value": "",
     },
     "SamlAuthEnabled": {
       "Value": "false",
@@ -5294,8 +5315,31 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
     "SpeechToSpeechNamespace": {
       "Value": "speech-to-speech",
     },
+    "StatsTableName": {
+      "Value": {
+        "Ref": "DatabaseStatsTable9C709761",
+      },
+    },
+    "TableName": {
+      "Value": {
+        "Ref": "DatabaseTableF104A135",
+      },
+    },
+    "TranscriptBucketName": {
+      "Value": {
+        "Ref": "TranscribeTranscriptBucketE67CAF92",
+      },
+    },
     "UseCaseBuilderEnabled": {
       "Value": "true",
+    },
+    "UseCaseIdIndexName": {
+      "Value": "UseCaseIdIndexName",
+    },
+    "UseCaseTableName": {
+      "Value": {
+        "Ref": "UseCaseBuilderUseCaseBuilderTable449740F3",
+      },
     },
     "UserPoolClientId": {
       "Value": {
@@ -13171,6 +13215,16 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         ],
       },
     },
+    "AudioBucketName": {
+      "Value": {
+        "Ref": "TranscribeAudioBucket39DFF290",
+      },
+    },
+    "BucketName": {
+      "Value": {
+        "Ref": "APIFileBucket8FB29855",
+      },
+    },
     "EndpointNames": {
       "Value": "[]",
     },
@@ -13203,6 +13257,11 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
     },
     "ImageGenerateModelIds": {
       "Value": "[{"modelId":"stability.stable-diffusion-xl-v1","region":"us-east-1"}]",
+    },
+    "IndexId": {
+      "Value": {
+        "Ref": "RagKendraIndexFEF3924C",
+      },
     },
     "InlineAgents": {
       "Value": "false",
@@ -13246,6 +13305,9 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         ],
       },
     },
+    "QueryDecompositionEnabled": {
+      "Value": "false",
+    },
     "RagEnabled": {
       "Value": "true",
     },
@@ -13254,6 +13316,9 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
     },
     "Region": {
       "Value": "us-east-1",
+    },
+    "RerankingModelId": {
+      "Value": "",
     },
     "SamlAuthEnabled": {
       "Value": "false",
@@ -13290,8 +13355,31 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
     "SpeechToSpeechNamespace": {
       "Value": "speech-to-speech",
     },
+    "StatsTableName": {
+      "Value": {
+        "Ref": "DatabaseStatsTable9C709761",
+      },
+    },
+    "TableName": {
+      "Value": {
+        "Ref": "DatabaseTableF104A135",
+      },
+    },
+    "TranscriptBucketName": {
+      "Value": {
+        "Ref": "TranscribeTranscriptBucketE67CAF92",
+      },
+    },
     "UseCaseBuilderEnabled": {
       "Value": "true",
+    },
+    "UseCaseIdIndexName": {
+      "Value": "UseCaseIdIndexName",
+    },
+    "UseCaseTableName": {
+      "Value": {
+        "Ref": "UseCaseBuilderUseCaseBuilderTable449740F3",
+      },
     },
     "UserPoolClientId": {
       "Value": {

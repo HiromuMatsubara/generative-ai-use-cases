@@ -592,6 +592,55 @@ export class GenerativeAiUseCasesStack extends Stack {
       value: safeMCPConfig,
     });
 
+    // Additional outputs for backend development
+    new CfnOutput(this, 'TableName', {
+      value: database.table.tableName,
+    });
+
+    new CfnOutput(this, 'StatsTableName', {
+      value: database.statsTable.tableName,
+    });
+
+    new CfnOutput(this, 'BucketName', {
+      value: api.fileBucket.bucketName,
+    });
+
+    new CfnOutput(this, 'QueryDecompositionEnabled', {
+      value: params.queryDecompositionEnabled.toString(),
+    });
+
+    new CfnOutput(this, 'RerankingModelId', {
+      value: params.rerankingModelId ?? '',
+    });
+
+    if (useCaseBuilder?.useCaseBuilderTable) {
+      new CfnOutput(this, 'UseCaseTableName', {
+        value: useCaseBuilder.useCaseBuilderTable.tableName,
+      });
+
+      new CfnOutput(this, 'UseCaseIdIndexName', {
+        value: useCaseBuilder.useCaseIdIndexName,
+      });
+    }
+
+    if (transcribe?.audioBucket) {
+      new CfnOutput(this, 'AudioBucketName', {
+        value: transcribe.audioBucket.bucketName,
+      });
+    }
+
+    if (transcribe?.transcriptBucket) {
+      new CfnOutput(this, 'TranscriptBucketName', {
+        value: transcribe.transcriptBucket.bucketName,
+      });
+    }
+
+    if (params.ragEnabled && rag?.kendraIndexId) {
+      new CfnOutput(this, 'IndexId', {
+        value: rag.kendraIndexId,
+      });
+    }
+
     this.userPool = auth.userPool;
     this.userPoolClient = auth.client;
 

@@ -1,0 +1,7 @@
+FROM node:18-alpine
+
+WORKDIR /workspace
+
+EXPOSE 8080
+
+CMD ["npx", "ts-node", "packages/cdk/lambda/api/index.ts"]
