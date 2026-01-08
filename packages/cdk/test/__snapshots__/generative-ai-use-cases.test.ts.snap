@@ -5561,6 +5561,7 @@ exports[`GenerativeAiUseCases matches the snapshot (closed network mode) 6`] = `
         },
         "Environment": {
           "Variables": {
+            "ALLOWED_ORIGINS": "CLOSED_NETWORK_MODE",
             "AUDIO_BUCKET_NAME": {
               "Ref": "TranscribeAudioBucket39DFF290",
             },
@@ -13584,6 +13585,20 @@ exports[`GenerativeAiUseCases matches the snapshot 6`] = `
         },
         "Environment": {
           "Variables": {
+            "ALLOWED_ORIGINS": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Fn::GetAtt": [
+                      "ApiWebCloudFrontDistributionA115FBC3",
+                      "DomainName",
+                    ],
+                  },
+                ],
+              ],
+            },
             "AUDIO_BUCKET_NAME": {
               "Ref": "TranscribeAudioBucket39DFF290",
             },

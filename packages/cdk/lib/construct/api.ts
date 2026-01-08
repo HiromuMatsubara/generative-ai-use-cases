@@ -86,6 +86,8 @@ export interface BackendApiProps {
   readonly allowedIpV4AddressRanges?: string[];
   readonly allowedIpV6AddressRanges?: string[];
   readonly additionalS3Buckets?: Bucket[];
+  // CORS
+  readonly webUrl?: string;
 }
 
 export class Api extends Construct {
@@ -93,6 +95,7 @@ export class Api extends Construct {
   readonly predictStreamFunction: NodejsFunction;
   readonly invokeFlowFunction: NodejsFunction;
   readonly optimizePromptFunction: NodejsFunction;
+  readonly apiHandler: NodejsFunction;
   readonly modelRegion: string;
   readonly modelIds: ModelConfiguration[];
   readonly imageGenerationModelIds: ModelConfiguration[];
@@ -240,10 +243,14 @@ export class Api extends Construct {
         ...(props.guardrailVersion
           ? { GUARDRAIL_VERSION: props.guardrailVersion }
           : {}),
+        // CORS allowed origins
+        ALLOWED_ORIGINS: props.webUrl || '*',
       },
       vpc,
       securityGroups,
     });
+
+    this.apiHandler = apiHandler;
 
     table.grantReadWriteData(apiHandler);
     props.statsTable.grantReadWriteData(apiHandler);

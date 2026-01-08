@@ -348,6 +348,9 @@ export class GenerativeAiUseCasesStack extends Stack {
       brandingConfig: params.brandingConfig,
     });
 
+    // Update API handler with web URL for CORS
+    api.apiHandler.addEnvironment('ALLOWED_ORIGINS', web.webUrl);
+
     // Cfn Outputs
     new CfnOutput(this, 'Region', {
       value: this.region,

@@ -34,6 +34,13 @@ export const sendResponse = (
       | { [key: string]: boolean | number | string };
   }
 ) => {
+  // Apply any headers provided by the Lambda-style result
+  if (result.headers) {
+    Object.entries(result.headers).forEach(([key, value]) => {
+      res.setHeader(key, String(value));
+    });
+  }
+
   if (result.statusCode === 204 || !result.body) {
     res.status(result.statusCode).send();
   } else {
@@ -44,6 +51,10 @@ export const sendResponse = (
       res.status(result.statusCode).json(body);
     } catch {
       // Plain text response
+      // Ensure a safe content type to prevent executing user-controlled content as HTML
+      if (!res.get('Content-Type')) {
+        res.type('text/plain; charset=utf-8');
+      }
       res.status(result.statusCode).send(result.body);
     }
   }

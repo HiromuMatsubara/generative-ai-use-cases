@@ -38,7 +38,13 @@ router.get('/public', async (req: Request, res: Response) => {
       exclusiveStartKey,
       limit
     );
-    console.log(userId, exclusiveStartKey, limit, result);
+    console.log(
+      'List public agents:',
+      userId,
+      exclusiveStartKey,
+      limit,
+      result
+    );
     res.status(result.statusCode).json(JSON.parse(result.body || '{}'));
   } catch (error) {
     console.error('List public agents error:', error);
