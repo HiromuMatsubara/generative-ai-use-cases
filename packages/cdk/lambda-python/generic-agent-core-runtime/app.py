@@ -67,6 +67,7 @@ async def invocations(request: Request):
         model_info = request_data.get("model", {})
         user_id = request_data.get("user_id")
         mcp_servers = request_data.get("mcp_servers")
+        sub_agents = request_data.get("sub_agents", [])
         agent_session_id = request_data.get("session_id")
         agent_id = request_data.get("agent_id")
         code_execution_enabled = request_data.get("code_execution_enabled", False)
@@ -87,6 +88,7 @@ async def invocations(request: Request):
                     model_info=model_info,
                     user_id=user_id,
                     mcp_servers=mcp_servers,
+                    sub_agents=sub_agents,
                     session_id=agent_session_id or session_id,
                     agent_id=agent_id,
                     code_execution_enabled=code_execution_enabled,

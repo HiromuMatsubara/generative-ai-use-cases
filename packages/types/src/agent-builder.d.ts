@@ -193,6 +193,7 @@ export type AgentCoreRuntimeRequest = {
   files?: File[]; // Added support for file uploads
   userId?: string; // User ID for MCP server management
   mcpServers?: MCPServerReference[]; // Changed to string array
+  subAgents?: SubAgent[]; // Sub-agents for multi-agent collaboration
   agentId?: string; // Agent ID for logging/tracking
   codeExecutionEnabled?: boolean; // Code execution setting
 };

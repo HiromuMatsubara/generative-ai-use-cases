@@ -152,6 +152,7 @@ const useAgentCoreApi = (id: string) => {
           },
           ...(req.userId && { user_id: req.userId }),
           ...(req.mcpServers && { mcp_servers: req.mcpServers }),
+          ...(req.subAgents && { sub_agents: req.subAgents }),
           ...(req.agentId && { agent_id: req.agentId }),
           ...(req.sessionId && { session_id: req.sessionId }),
           ...(req.codeExecutionEnabled !== undefined && {

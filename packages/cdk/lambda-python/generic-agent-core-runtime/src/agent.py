@@ -55,6 +55,7 @@ class AgentManager:
         model_info: ModelInfo,
         user_id: str | None = None,
         mcp_servers: list[str] | None = None,
+        sub_agents: list[dict[str, str]] | None = None,
         session_id: str | None = None,
         agent_id: str | None = None,
         code_execution_enabled: bool | None = False,
@@ -70,6 +71,12 @@ class AgentManager:
 
             # Combine system prompts
             combined_system_prompt = get_system_prompt(system_prompt)
+
+            # Log sub-agents if provided
+            if sub_agents:
+                logger.info(f"Sub-agents configured: {len(sub_agents)}")
+                for sub_agent in sub_agents:
+                    logger.debug(f"  - {sub_agent.get('name')}: {sub_agent.get('arn')}")
 
             # Get tools (MCP handling is done in ToolManager)
             tools = self.tool_manager.get_tools_with_options(code_execution_enabled=code_execution_enabled, mcp_servers=mcp_servers)

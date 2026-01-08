@@ -56,7 +56,8 @@ const useAgentCore = (id: string) => {
     mcpServers?: string[],
     agentId?: string,
     modelId?: string, // Add modelId parameter
-    codeExecutionEnabled?: boolean // Add codeExecutionEnabled parameter
+    codeExecutionEnabled?: boolean, // Add codeExecutionEnabled parameter
+    subAgents?: Array<{ name: string; description: string; arn: string }> // Add subAgents parameter
   ) => {
     // Use provided modelId or fall back to current model ID
     const targetModelId = modelId || getModelId();
@@ -109,6 +110,7 @@ const useAgentCore = (id: string) => {
       files, // Pass the uploaded files - they will be converted to Strands format in useAgentCoreApi
       userId,
       mcpServers,
+      subAgents,
       agentId,
       codeExecutionEnabled,
     };

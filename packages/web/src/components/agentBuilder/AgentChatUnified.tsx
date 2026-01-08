@@ -204,7 +204,8 @@ Please respond as this agent with the specified behavior and personality.`;
         agent.mcpServers,
         agent.agentId,
         modelId,
-        agent.codeExecutionEnabled ?? false
+        agent.codeExecutionEnabled ?? false,
+        agent.subAgents
       );
 
       setChatContent('');
