@@ -27,6 +27,7 @@ function convertToAgentConfiguration(
     description: agent.description,
     systemPrompt: agent.systemPrompt,
     mcpServers: agent.mcpServers || [],
+    subAgents: (agent as any).subAgents || [],
     modelId: agent.modelId,
     codeExecutionEnabled: agent.codeExecutionEnabled || false,
     isPublic: agent.isPublic || false,
@@ -52,6 +53,9 @@ export async function createAgent(
   // MCP server names (no sanitization needed for string array)
   const mcpServerNames = request.mcpServers || [];
 
+  // Sub-agents (no sanitization needed, validated by schema)
+  const subAgents = request.subAgents || [];
+
   // Get user email from Cognito
   const userEmail = await getUserEmail(userId);
 
@@ -60,6 +64,7 @@ export async function createAgent(
     description: (request.description || '').trim(),
     systemPrompt: request.systemPrompt.trim(),
     mcpServers: mcpServerNames,
+    subAgents: subAgents,
     modelId: request.modelId,
     codeExecutionEnabled: request.codeExecutionEnabled ?? false,
     isPublic: request.isPublic ?? false,
@@ -108,6 +113,9 @@ export async function updateAgent(
   // MCP server names
   const mcpServerNames = request.mcpServers || existingAgent.mcpServers;
 
+  // Sub-agents
+  const subAgents = request.subAgents ?? (existingAgent as any).subAgents ?? [];
+
   // Get user email from Cognito if not provided in request
   const userEmail = request.createdByEmail || (await getUserEmail(userId));
 
@@ -117,6 +125,7 @@ export async function updateAgent(
       description: request.description?.trim() || existingAgent.description,
       systemPrompt: request.systemPrompt?.trim() || existingAgent.systemPrompt,
       mcpServers: mcpServerNames,
+      subAgents: subAgents,
       modelId: request.modelId || existingAgent.modelId,
       codeExecutionEnabled:
         request.codeExecutionEnabled ??
@@ -298,6 +307,7 @@ export async function cloneAgent(
     systemPrompt: sourceAgent.systemPrompt,
     modelId: sourceAgent.modelId,
     mcpServers: sourceAgent.mcpServers || [],
+    subAgents: (sourceAgent as any).subAgents || [],
     codeExecutionEnabled: sourceAgent.codeExecutionEnabled || false,
     tags: sourceAgent.tags || [],
     isPublic: false, // Cloned agents are private by default

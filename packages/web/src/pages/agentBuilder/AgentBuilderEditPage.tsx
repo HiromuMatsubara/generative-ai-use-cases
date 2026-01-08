@@ -43,6 +43,7 @@ const AgentBuilderEditPage: React.FC = () => {
           systemPrompt: formData.systemPrompt,
           modelId: formData.modelId,
           mcpServers: formData.mcpServers as string[], // Explicit type assertion
+          subAgents: formData.subAgents,
           codeExecutionEnabled: formData.codeExecutionEnabled,
           isPublic: formData.isPublic,
           tags: formData.tags,
@@ -61,6 +62,7 @@ const AgentBuilderEditPage: React.FC = () => {
           systemPrompt: formData.systemPrompt,
           modelId: formData.modelId,
           mcpServers: formData.mcpServers as string[], // Explicit type assertion
+          subAgents: formData.subAgents,
           codeExecutionEnabled: formData.codeExecutionEnabled,
           isPublic: formData.isPublic,
           tags: formData.tags,
@@ -201,6 +203,7 @@ const AgentBuilderEditPage: React.FC = () => {
                       systemPrompt: currentFormData.systemPrompt,
                       modelId: currentFormData.modelId,
                       mcpServers: currentFormData.mcpServers as string[],
+                      subAgents: currentFormData.subAgents || [],
                       codeExecutionEnabled:
                         currentFormData.codeExecutionEnabled,
                       isPublic: currentFormData.isPublic,
@@ -214,6 +217,7 @@ const AgentBuilderEditPage: React.FC = () => {
                   : {
                       ...agent!,
                       agentId: agentId || 'temp-id',
+                      subAgents: (agent as any)?.subAgents || [],
                       isPublic: false,
                       createdAt: new Date().toISOString(),
                       updatedAt: new Date().toISOString(),

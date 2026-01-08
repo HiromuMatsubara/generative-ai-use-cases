@@ -7,6 +7,24 @@ export const MCPServerReferenceSchema = z
   .max(100, 'MCP server name must be 100 characters or less')
   .regex(/^[a-zA-Z0-9._-]+$/, 'MCP server name contains invalid characters');
 
+// Sub-Agent Schema (for multi-agent collaboration)
+export const SubAgentSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Sub-agent name is required')
+    .max(100, 'Sub-agent name must be 100 characters or less'),
+  description: z
+    .string()
+    .max(500, 'Sub-agent description must be 500 characters or less'),
+  arn: z
+    .string()
+    .min(1, 'Sub-agent ARN is required')
+    .regex(
+      /^arn:aws:bedrock-agentcore:[a-z0-9-]+:\d{12}:runtime\/[a-zA-Z0-9_-]+$/,
+      'Invalid AgentCore Runtime ARN format'
+    ),
+});
+
 // MCP Server Configuration Schema (for internal use)
 export const MCPServerConfigSchema = z
   .object({
@@ -103,6 +121,11 @@ export const CreateAgentRequestSchema = z.object({
     .max(10, 'Maximum 10 MCP servers allowed')
     .optional()
     .default([]),
+  subAgents: z
+    .array(SubAgentSchema)
+    .max(5, 'Maximum 5 sub-agents allowed')
+    .optional()
+    .default([]),
   codeExecutionEnabled: z.boolean().optional().default(false),
   isPublic: z.boolean().optional().default(false),
   tags: z
@@ -130,6 +153,11 @@ export const UpdateAgentRequestSchema = z.object({
   mcpServers: z
     .array(MCPServerReferenceSchema)
     .max(10, 'Maximum 10 MCP servers allowed'),
+  subAgents: z
+    .array(SubAgentSchema)
+    .max(5, 'Maximum 5 sub-agents allowed')
+    .optional()
+    .default([]),
   codeExecutionEnabled: z.boolean().optional().default(false),
   isPublic: z.boolean().optional().default(false),
   tags: z

@@ -93,6 +93,7 @@ const useAgentBuilderList = () => {
       description: t('agent_builder.external_agent_description'),
       systemPrompt: '', // External agents don't have editable system prompts
       mcpServers: [],
+      subAgents: [],
       modelId: '',
       codeExecutionEnabled: false,
       isPublic: false,
@@ -116,6 +117,7 @@ const useAgentBuilderList = () => {
       agent.description || t('agent_builder.bedrock_agent_description'),
     systemPrompt: '', // Bedrock agents don't have editable system prompts
     mcpServers: [],
+    subAgents: [],
     modelId: agent.displayName,
     codeExecutionEnabled: false,
     isPublic: false,

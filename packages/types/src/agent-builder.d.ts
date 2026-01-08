@@ -13,6 +13,13 @@ export type MCPServerConfig = {
 // MCP Server Reference (what users specify)
 export type MCPServerReference = string;
 
+// Sub-Agent Configuration (for multi-agent collaboration)
+export type SubAgent = {
+  name: string;
+  description: string;
+  arn: string;
+};
+
 // Common items for all agent data
 // Table: PartitionKey=id, SortKey=dataType
 export type AgentCommon = {
@@ -27,6 +34,7 @@ export type AgentContent = {
   description?: string;
   systemPrompt: string;
   mcpServers: MCPServerReference[]; // Changed to string array
+  subAgents?: SubAgent[]; // Optional array of sub-agents
   modelId: string;
   codeExecutionEnabled?: boolean;
   tags?: string[];
@@ -41,6 +49,7 @@ export type AgentInTable = AgentCommon &
     codeExecutionEnabled: boolean;
     isPublic: boolean;
     tags: string[];
+    subAgents: SubAgent[]; // Required in table (default to empty array)
     starCount: number; // Number of users who favorited this agent
     createdAt: string;
     updatedAt: string;

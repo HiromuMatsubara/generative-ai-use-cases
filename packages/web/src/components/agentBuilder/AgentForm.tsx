@@ -6,6 +6,7 @@ import InputText from '../InputText';
 import Textarea from '../Textarea';
 import Select from '../Select';
 import MCPServerManager from './MCPServerManager';
+import SubAgentManager, { SubAgent } from './SubAgentManager';
 import ModalDialog from '../ModalDialog';
 import { MODELS } from '../../hooks/useModel';
 import { AgentConfiguration } from 'generative-ai-use-cases';
@@ -19,6 +20,7 @@ export interface AgentFormData {
   systemPrompt: string;
   modelId: string;
   mcpServers: string[];
+  subAgents: SubAgent[];
   codeExecutionEnabled: boolean;
   isPublic: boolean;
   tags: string[];
@@ -54,6 +56,7 @@ const AgentForm: React.FC<AgentFormProps> = ({
     modelId:
       availableModels[0] || 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
     mcpServers: [],
+    subAgents: [],
     codeExecutionEnabled: false,
     isPublic: false,
     tags: [],
@@ -112,6 +115,7 @@ const AgentForm: React.FC<AgentFormProps> = ({
         systemPrompt: initialData.systemPrompt || '',
         modelId: initialData.modelId || availableModels[0] || '',
         mcpServers: initialData.mcpServers || [],
+        subAgents: (initialData as any).subAgents || [],
         codeExecutionEnabled: initialData.codeExecutionEnabled || false,
         isPublic: initialData.isPublic || false,
         tags: initialData.tags || [],
@@ -330,6 +334,16 @@ const AgentForm: React.FC<AgentFormProps> = ({
           servers={formData.mcpServers}
           onChange={(servers) =>
             setFormData({ ...formData, mcpServers: servers })
+          }
+        />
+      </div>
+
+      {/* Multi Agent Configuration */}
+      <div className="rounded-lg border bg-white p-6">
+        <SubAgentManager
+          subAgents={formData.subAgents}
+          onChange={(subAgents) =>
+            setFormData({ ...formData, subAgents: subAgents })
           }
         />
       </div>
