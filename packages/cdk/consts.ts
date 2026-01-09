@@ -1,5 +1,6 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 export const LAMBDA_RUNTIME_NODEJS = lambda.Runtime.NODEJS_22_X;
+export const LAMBDA_RUNTIME_PYTHON = lambda.Runtime.PYTHON_3_12;
 
 export const TAG_KEY = 'GenU';

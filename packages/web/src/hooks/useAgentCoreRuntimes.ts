@@ -5,16 +5,19 @@
  */
 
 import { useState, useEffect } from 'react';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 export interface AgentCoreRuntime {
   name: string;
   description: string;
   arn: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 /**
- * Custom hook that fetches available AgentCore Runtime agents.
- * In a real implementation, this would call an API endpoint.
+ * Custom hook that fetches available AgentCore Runtime agents from AWS.
  *
  * @returns Object containing runtimes array, loading state, and error
  */
@@ -27,39 +30,48 @@ export const useAgentCoreRuntimes = () => {
     const fetchRuntimes = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual API call
-        // const response = await fetch('/api/agent-core-runtimes');
-        // const data = await response.json();
-        // setRuntimes(data);
 
-        // Mock data for now
-        const mockRuntimes: AgentCoreRuntime[] = [
-          {
-            name: 'Worker',
-            description:
-              'Delegate specialized work to the Worker AgentCore Runtime agent',
-            arn: 'arn:aws:bedrock-agentcore:us-east-1:512617221979:runtime/dedicated_hosted_agent-ZK2Jbj4fcY',
-          },
-          {
-            name: 'Analyzer',
-            description:
-              'Analyze data and provide insights using the Analyzer agent',
-            arn: 'arn:aws:bedrock-agentcore:us-east-1:512617221979:runtime/dedicated_hosted_agent-ABC123xyz',
-          },
-          {
-            name: 'Researcher',
-            description: 'Research and gather information from various sources',
-            arn: 'arn:aws:bedrock-agentcore:us-east-1:512617221979:runtime/dedicated_hosted_agent-DEF456uvw',
-          },
-        ];
+        // Get the API endpoint from environment
+        const apiEndpoint = import.meta.env.VITE_APP_API_ENDPOINT;
+        if (!apiEndpoint) {
+          throw new Error('API endpoint not configured');
+        }
 
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        setRuntimes(mockRuntimes);
+        // Get authentication token
+        const session = await fetchAuthSession();
+        const token = session.tokens?.idToken?.toString();
+        if (!token) {
+          throw new Error('User is not authenticated');
+        }
+
+        // Call the API to list AgentCore runtimes
+        const response = await fetch(
+          `${apiEndpoint}/agent-core-runtimes/list`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: token,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch runtimes: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        setRuntimes(data.runtimes || []);
         setError(null);
       } catch (err) {
         console.error('Error fetching AgentCore Runtimes:', err);
-        setError('Failed to load AgentCore Runtime agents');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to load AgentCore Runtime agents'
+        );
         setRuntimes([]);
       } finally {
         setLoading(false);

@@ -402,6 +402,7 @@ export class GenerativeAiUseCasesStack extends Stack {
         vpc: props.vpc,
         securityGroups,
         agentBuilderRuntimeArn,
+        agentCoreExternalRuntimes: params.agentCoreExternalRuntimes || [],
         useCaseBuilderTable: useCaseBuilder.useCaseBuilderTable,
         useCaseIdIndexName: useCaseBuilder.useCaseIdIndexName,
         cognitoUserPoolProxyEndpoint: props.cognitoUserPoolProxyEndpoint,

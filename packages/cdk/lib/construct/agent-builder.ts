@@ -12,9 +12,11 @@ import {
 import { Duration } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
-import { LAMBDA_RUNTIME_NODEJS } from '../../consts';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { LAMBDA_RUNTIME_NODEJS, LAMBDA_RUNTIME_PYTHON } from '../../consts';
 import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import * as path from 'path';
 
 export interface AgentBuilderProps {
   readonly userPool: UserPool;
@@ -22,6 +24,11 @@ export interface AgentBuilderProps {
   readonly vpc?: IVpc;
   readonly securityGroups?: ISecurityGroup[];
   readonly agentBuilderRuntimeArn: string;
+  readonly agentCoreExternalRuntimes: Array<{
+    name: string;
+    description: string;
+    arn: string;
+  }>;
   readonly useCaseBuilderTable: ddb.Table;
   readonly useCaseIdIndexName: string;
   readonly cognitoUserPoolProxyEndpoint?: string;
@@ -79,6 +86,39 @@ export class AgentBuilder extends Construct {
     });
     agentBuilderFunction.role?.addToPrincipalPolicy(cognitoPolicyForAgent);
 
+    // Lambda function to list AgentCore Runtimes (Python)
+    const listAgentCoreRuntimesFunction = new lambda.Function(
+      this,
+      'ListAgentCoreRuntimes',
+      {
+        runtime: LAMBDA_RUNTIME_PYTHON,
+        handler: 'list_agent_core_runtimes.handler',
+        code: lambda.Code.fromAsset(
+          path.join(__dirname, '../../lambda-python')
+        ),
+        memorySize: 512,
+        timeout: Duration.seconds(30),
+        environment: {
+          REGION: process.env.MODEL_REGION || 'us-east-1',
+        },
+        vpc: props.vpc,
+        securityGroups: props.securityGroups,
+      }
+    );
+
+    // Grant permissions to list AgentCore runtimes
+    const agentCoreListPolicy = new PolicyStatement({
+      effect: Effect.ALLOW,
+      resources: ['*'],
+      actions: [
+        'bedrock-agent-runtime:ListAgentRuntimes',
+        'bedrock-agentcore:ListAgentRuntimes',
+      ],
+    });
+    listAgentCoreRuntimesFunction.role?.addToPrincipalPolicy(
+      agentCoreListPolicy
+    );
+
     // API Gateway setup
     const authorizer = new CognitoUserPoolsAuthorizer(this, 'Authorizer', {
       cognitoUserPools: [userPool],
@@ -88,6 +128,18 @@ export class AgentBuilder extends Construct {
       authorizationType: AuthorizationType.COGNITO,
       authorizer,
     };
+
+    // AgentCore Runtimes API endpoint
+    const agentCoreRuntimesResource = api.root.addResource(
+      'agent-core-runtimes'
+    );
+    agentCoreRuntimesResource
+      .addResource('list')
+      .addMethod(
+        'GET',
+        new LambdaIntegration(listAgentCoreRuntimesFunction),
+        commonAuthorizerProps
+      );
 
     // Agent Builder API endpoints - all routes handled by proxy+ integration
     const agentsResource = api.root.addResource('agents');
