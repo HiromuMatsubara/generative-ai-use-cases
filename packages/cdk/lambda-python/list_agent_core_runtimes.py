@@ -39,14 +39,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Format the response
         runtimes = []
         for runtime in response.get("agentRuntimes", []):
-            runtimes.append({
-                "name": runtime.get("agentRuntimeName", "Unnamed Runtime"),
-                "description": runtime.get("description", "No description available"),
-                "arn": runtime.get("agentRuntimeArn", ""),
-                "status": runtime.get("status", "UNKNOWN"),
-                "createdAt": runtime.get("createdAt").isoformat() if runtime.get("createdAt") else None,
-                "updatedAt": runtime.get("updatedAt").isoformat() if runtime.get("updatedAt") else None,
-            })
+            runtime_name = runtime.get("agentRuntimeName", "Unnamed Runtime")
+            if runtime_name not in ("GenUGenericRuntime", "GenUAgentBuilderRuntime"):
+                runtimes.append({
+                    "name": runtime_name,
+                    "description": runtime.get("description", "No description available"),
+                    "arn": runtime.get("agentRuntimeArn", ""),
+                    "status": runtime.get("status", "UNKNOWN"),
+                    "createdAt": runtime.get("createdAt").isoformat() if runtime.get("createdAt") else None,
+                    "updatedAt": runtime.get("updatedAt").isoformat() if runtime.get("updatedAt") else None,
+                })
         
         logger.info(f"Found {len(runtimes)} AgentCore runtimes")
         
