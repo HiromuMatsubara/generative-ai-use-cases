@@ -4,12 +4,13 @@ import json
 import logging
 import uuid
 from collections.abc import AsyncGenerator
-from typing import Any, Optional
+from typing import Any
 
 import boto3
 from strands import Agent as StrandsAgent
 from strands.models import BedrockModel
 from strands.tools import tool
+from strands_tools.browser import AgentCoreBrowser
 
 from .config import extract_model_info, get_max_iterations, get_system_prompt, supports_prompt_cache, supports_tools_cache
 from .tools import ToolManager
@@ -25,66 +26,63 @@ logger.setLevel(logging.INFO)
 # Initialize Bedrock AgentCore client (will be set when needed)
 agent_core_client = None
 
+# Initialize the Browser tool
+browser_tool = AgentCoreBrowser(region="us-east-1")
+
 
 class SubAgent:
     """Class to represent a sub-agent with its description and ARN"""
-    
+
     def __init__(self, name: str, description: str, arn: str):
         self.name = name
         self.description = description
         self.arn = arn
-    
+
     def create_tool_function(self):
         """Create a tool function for this specific sub-agent"""
-        
+
         # Capture self in closure
         sub_agent_instance = self
-        
-        def agent_tool(task: str, session_id: Optional[str] = None) -> str:
-            f"""{sub_agent_instance.description}
-            
+
+        def agent_tool(task: str, session_id: str | None = None) -> str:
+            """Dynamic docstring for sub-agent tool.
+
             Args:
-                task: The task or question to delegate to the {sub_agent_instance.name} agent
+                task: The task or question to delegate to the sub-agent
                 session_id: Optional session ID for maintaining conversation context
-            
+
             Returns:
-                The response from the {sub_agent_instance.name} agent
+                The response from the sub-agent
             """
             return sub_agent_instance._invoke_agent(task, session_id)
-        
+
         # Set function metadata
         agent_tool.__name__ = f"call_{self.name.lower().replace(' ', '_')}_agent"
         agent_tool.__doc__ = f"{self.description}\nUse this when you need: {self.description.lower()}"
-        
+
         return tool(agent_tool)
-    
-    def _invoke_agent(self, task: str, session_id: Optional[str] = None) -> str:
+
+    def _invoke_agent(self, task: str, session_id: str | None = None) -> str:
         """Internal method to invoke this specific agent"""
         global agent_core_client
-        
+
         # Initialize client if not already done
         if agent_core_client is None:
-            agent_core_client = boto3.client('bedrock-agentcore', region_name="us-east-1") #fixed to us-east-1 for now
-        
+            agent_core_client = boto3.client("bedrock-agentcore", region_name="us-east-1")  # fixed to us-east-1 for now
+
         sid = session_id or str(uuid.uuid4())
-        
+
         try:
             # Format payload according to Bedrock AgentCore API requirements
-            formatted_payload = {
-                "prompt": task
-            }
-            
+            formatted_payload = {"prompt": task}
+
             # Serialize payload to JSON bytes as required by AWS API
-            payload_bytes = json.dumps(formatted_payload).encode('utf-8')
-            
+            payload_bytes = json.dumps(formatted_payload).encode("utf-8")
+
             logger.info(f"Invoking sub-agent {self.name} with ARN: {self.arn}")
-            
-            response = agent_core_client.invoke_agent_runtime(
-                agentRuntimeArn=self.arn,
-                runtimeSessionId=sid,
-                payload=payload_bytes
-            )
-            
+
+            response = agent_core_client.invoke_agent_runtime(agentRuntimeArn=self.arn, runtimeSessionId=sid, payload=payload_bytes)
+
             # Process and return the response
             if "text/event-stream" in response.get("contentType", ""):
                 # Handle streaming response
@@ -96,21 +94,22 @@ class SubAgent:
                             line = line[6:]
                             content.append(line)
                 return "\n".join(content)
-            
+
             elif response.get("contentType") == "application/json":
                 # Handle standard JSON response
                 content = []
                 for chunk in response.get("response", []):
-                    content.append(chunk.decode('utf-8'))
-                return ''.join(content)
-            
+                    content.append(chunk.decode("utf-8"))
+                return "".join(content)
+
             else:
                 # Handle other response types
                 return str(response)
-                
+
         except Exception as e:
             logger.error(f"Error calling {self.name} agent: {str(e)}")
             return f"Error: Failed to call {self.name} agent - {str(e)}"
+
 
 class IterationLimitExceededError(Exception):
     """Exception raised when iteration limit is exceeded"""
@@ -170,18 +169,14 @@ class AgentManager:
             # Log sub-agents if provided and add them as tools
             if sub_agents:
                 logger.info(f"Sub-agents configured: {len(sub_agents)}")
-                
+
                 # Create SubAgent instances from the provided configuration
                 SUB_AGENTS = []
                 for sub_agent_config in sub_agents:
-                    sub_agent = SubAgent(
-                        name=sub_agent_config.get('name', 'Unknown'),
-                        description=sub_agent_config.get('description', 'No description'),
-                        arn=sub_agent_config.get('arn', '')
-                    )
+                    sub_agent = SubAgent(name=sub_agent_config.get("name", "Unknown"), description=sub_agent_config.get("description", "No description"), arn=sub_agent_config.get("arn", ""))
                     SUB_AGENTS.append(sub_agent)
                     logger.debug(f"  - {sub_agent.name}: {sub_agent.arn}")
-                
+
                 # Create tool functions for each sub-agent and add to tools list
                 for sub_agent in SUB_AGENTS:
                     try:
@@ -190,7 +185,7 @@ class AgentManager:
                         logger.info(f"Added sub-agent tool: {sub_agent.name}")
                     except Exception as e:
                         logger.error(f"Failed to create tool for sub-agent {sub_agent.name}: {e}")
-                
+
                 logger.info(f"Total tools available: {len(tools)}")
 
             # Log agent info

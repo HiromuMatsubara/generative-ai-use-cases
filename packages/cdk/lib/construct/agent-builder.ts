@@ -94,7 +94,7 @@ export class AgentBuilder extends Construct {
         runtime: LAMBDA_RUNTIME_PYTHON,
         handler: 'list_agent_core_runtimes.handler',
         code: lambda.Code.fromAsset(
-          path.join(__dirname, '../../lambda-python')
+          path.join(__dirname, '../../lambda-python/list-agent-core-runtimes')
         ),
         memorySize: 512,
         timeout: Duration.seconds(30),
