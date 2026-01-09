@@ -46,15 +46,18 @@ export const sendResponse = (
   } else {
     // Try to parse as JSON, if it fails, send as plain text
     try {
-      const body =
-        typeof result.body === 'string' ? JSON.parse(result.body) : result.body;
+      // If body is already an object, send it directly as JSON
+      if (typeof result.body !== 'string') {
+        res.status(result.statusCode).json(result.body);
+        return;
+      }
+
+      const body = JSON.parse(result.body);
       res.status(result.statusCode).json(body);
     } catch {
       // Plain text response
-      // Ensure a safe content type to prevent executing user-controlled content as HTML
-      if (!res.get('Content-Type')) {
-        res.type('text/plain; charset=utf-8');
-      }
+      // Force a safe content type to prevent executing user-controlled content as HTML
+      res.type('text/plain; charset=utf-8');
       res.status(result.statusCode).send(result.body);
     }
   }
