@@ -110,12 +110,12 @@ agent_builder:
   server_configuration: Server Configuration
   server_description_placeholder: Brief description of what this server provides...
   server_name: Server Name
-  sub_agent_description: Select AgentCore Runtime agents to enable multi-agent collaboration. Sub-agents can be delegated specialized tasks.
   server_name_label: Server Name
   server_name_placeholder: e.g., github-mcp-server
   share_publicly: Share publicly
   showing_results: Showing {{start}}-{{end}} of {{total}} results
   start_chatting_with: Start chatting with {{name}}
+  sub_agent_description: Select AgentCore Runtime agents to enable multi-agent collaboration. Sub-agents can be delegated specialized tasks.
   system_prompt: System Prompt
   tags: Tags
   test: Test

@@ -27,7 +27,7 @@ function convertToAgentConfiguration(
     description: agent.description,
     systemPrompt: agent.systemPrompt,
     mcpServers: agent.mcpServers || [],
-    subAgents: (agent as any).subAgents || [],
+    subAgents: agent.subAgents || [],
     modelId: agent.modelId,
     codeExecutionEnabled: agent.codeExecutionEnabled || false,
     isPublic: agent.isPublic || false,
@@ -114,7 +114,7 @@ export async function updateAgent(
   const mcpServerNames = request.mcpServers || existingAgent.mcpServers;
 
   // Sub-agents
-  const subAgents = request.subAgents ?? (existingAgent as any).subAgents ?? [];
+  const subAgents = request.subAgents ?? existingAgent.subAgents ?? [];
 
   // Get user email from Cognito if not provided in request
   const userEmail = request.createdByEmail || (await getUserEmail(userId));
@@ -307,7 +307,7 @@ export async function cloneAgent(
     systemPrompt: sourceAgent.systemPrompt,
     modelId: sourceAgent.modelId,
     mcpServers: sourceAgent.mcpServers || [],
-    subAgents: (sourceAgent as any).subAgents || [],
+    subAgents: sourceAgent.subAgents || [],
     codeExecutionEnabled: sourceAgent.codeExecutionEnabled || false,
     tags: sourceAgent.tags || [],
     isPublic: false, // Cloned agents are private by default

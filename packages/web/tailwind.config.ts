@@ -12,6 +12,16 @@ export default {
     },
     fontFamily: {
       body: ['"Noto Sans JP"', 'Sarabun'],
+      mono: [
+        'ui-monospace',
+        'SFMono-Regular',
+        'Menlo',
+        'Monaco',
+        'Consolas',
+        '"Liberation Mono"',
+        '"Courier New"',
+        'monospace',
+      ],
     },
     extend: {
       transitionProperty: {

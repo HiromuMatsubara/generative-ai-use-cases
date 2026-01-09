@@ -217,7 +217,7 @@ const AgentBuilderEditPage: React.FC = () => {
                   : {
                       ...agent!,
                       agentId: agentId || 'temp-id',
-                      subAgents: (agent as any)?.subAgents || [],
+                      subAgents: agent?.subAgents || [],
                       isPublic: false,
                       createdAt: new Date().toISOString(),
                       updatedAt: new Date().toISOString(),

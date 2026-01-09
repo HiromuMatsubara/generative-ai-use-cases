@@ -115,7 +115,7 @@ const AgentForm: React.FC<AgentFormProps> = ({
         systemPrompt: initialData.systemPrompt || '',
         modelId: initialData.modelId || availableModels[0] || '',
         mcpServers: initialData.mcpServers || [],
-        subAgents: (initialData as any).subAgents || [],
+        subAgents: initialData.subAgents || [],
         codeExecutionEnabled: initialData.codeExecutionEnabled || false,
         isPublic: initialData.isPublic || false,
         tags: initialData.tags || [],
