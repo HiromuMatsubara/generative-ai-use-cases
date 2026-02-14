@@ -40,6 +40,14 @@ const MODEL_FEATURE: Record<string, FeatureFlags> = {
     video: false,
     reasoning: true,
   },
+  TEXT_DOC_IMAGE_ADAPTIVE_THINKING: {
+    text: true,
+    doc: true,
+    image: true,
+    video: false,
+    reasoning: true,
+    adaptiveThinking: true,
+  },
   TEXT_DOC_IMAGE_VIDEO: { text: true, doc: true, image: true, video: true },
   IMAGE_GEN: { image_gen: true },
   VIDEO_GEN: { video_gen: true },
@@ -102,19 +110,19 @@ export const modelMetadata: Record<string, ModelMetadata> = {
     displayName: 'Claude Opus 4',
   },
   'global.anthropic.claude-opus-4-6-v1': {
-    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_ADAPTIVE_THINKING,
     displayName: 'Claude Opus 4.6',
   },
   'us.anthropic.claude-opus-4-6-v1': {
-    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_ADAPTIVE_THINKING,
     displayName: 'Claude Opus 4.6',
   },
   'au.anthropic.claude-opus-4-6-v1': {
-    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_ADAPTIVE_THINKING,
     displayName: 'Claude Opus 4.6',
   },
   'eu.anthropic.claude-opus-4-6-v1': {
-    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_REASONING,
+    flags: MODEL_FEATURE.TEXT_DOC_IMAGE_ADAPTIVE_THINKING,
     displayName: 'Claude Opus 4.6',
   },
   'global.anthropic.claude-opus-4-5-20251101-v1:0': {
