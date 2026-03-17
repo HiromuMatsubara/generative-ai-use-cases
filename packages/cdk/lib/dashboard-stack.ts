@@ -8,8 +8,8 @@ import { ModelConfiguration } from 'generative-ai-use-cases';
 
 export interface DashboardStackProps extends StackProps {
   readonly params: ProcessedStackInput;
-  readonly userPool: cognito.UserPool;
-  readonly userPoolClient: cognito.UserPoolClient;
+  readonly userPool: cognito.IUserPool; //変更
+  readonly userPoolClient: cognito.IUserPoolClient; //変更
   readonly appRegion: string;
 }
 

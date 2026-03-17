@@ -13,8 +13,8 @@ import {
 } from 'aws-cdk-lib/aws-cloudfront';
 import { NodejsBuild } from '@cdklabs/deploy-time-build';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
-import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
+//import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53'; // Route53関連のインポートが不要なのでコメントアウト
+//import { CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets'; // Route53関連のインポートが不要なのでコメントアウト
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   AgentCoreConfiguration,
@@ -46,6 +46,8 @@ export interface WebProps {
   readonly samlAuthEnabled: boolean;
   readonly samlCognitoDomainName?: string | null;
   readonly samlCognitoFederatedIdentityProviderName?: string | null;
+  readonly sharepointRedirectUrl?: string | null;
+  readonly cloudfrontHostname?: string | null;
   readonly builtinAgentsJson: string;
   readonly customAgentsJson: string;
   readonly inlineAgents: boolean;
@@ -79,6 +81,7 @@ export interface WebProps {
 export class Web extends Construct {
   // public readonly distribution: Distribution;
   public readonly webUrl: string;
+  public readonly cloudFrontDomainName?: string;
 
   constructor(scope: Construct, id: string, props: WebProps) {
     super(scope, id);
@@ -188,8 +191,9 @@ export class Web extends Construct {
         props.domainName &&
         props.hostedZoneId
       ) {
-        // DNS record for custom domain
-        const hostedZone = HostedZone.fromHostedZoneAttributes(
+        // Note: In cross-account setup, DNS records must be created manually in the domain management account
+        // The CloudFront distribution domain name is output for CNAME record creation
+        /*const hostedZone = HostedZone.fromHostedZoneAttributes(
           this,
           'HostedZone',
           {
@@ -203,8 +207,9 @@ export class Web extends Construct {
           target: RecordTarget.fromAlias(
             new CloudFrontTarget(cloudFrontWebDistribution)
           ),
-        });
+        });*/
         this.webUrl = `https://${props.hostName}.${props.domainName}`;
+        this.cloudFrontDomainName = cloudFrontWebDistribution.domainName;
       } else {
         this.webUrl = `https://${cloudFrontWebDistribution.domainName}`;
       }
@@ -281,6 +286,8 @@ export class Web extends Construct {
         VITE_APP_SAML_COGNITO_DOMAIN_NAME: props.samlCognitoDomainName ?? '',
         VITE_APP_SAML_COGNITO_FEDERATED_IDENTITY_PROVIDER_NAME:
           props.samlCognitoFederatedIdentityProviderName ?? '',
+        VITE_APP_SHAREPOINT_REDIRECT_URL: props.sharepointRedirectUrl ?? '',
+        VITE_APP_CLOUDFRONT_HOSTNAME: props.cloudfrontHostname ?? '',
         VITE_APP_BUILTIN_AGENTS_JSON: props.builtinAgentsJson,
         VITE_APP_CUSTOM_AGENTS_JSON: props.customAgentsJson,
         VITE_APP_INLINE_AGENTS: props.inlineAgents.toString(),

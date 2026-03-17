@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import useVersion from '../hooks/useVersion';
 import IconWithDot from './IconWithDot';
-import { PiChartBar, PiGear } from 'react-icons/pi';
+import { PiGear } from 'react-icons/pi'; // PiChartBarは使わないので削除
 import { fetchAuthSession } from 'aws-amplify/auth';
 import useUserSetting from '../hooks/useUserSetting';
-import { useTranslation } from 'react-i18next';
+// useTranslationは使わないので削除
 
 type Props = BaseProps & {
   builderMode?: boolean;
@@ -17,7 +17,7 @@ type Props = BaseProps & {
 const DrawerBase: React.FC<Props> = (props) => {
   const { getHasUpdate } = useVersion();
   const { settingShowEmail } = useUserSetting();
-  const { t } = useTranslation();
+  // useTranslationを削除
 
   // The first argument is not required, but if it is not included, the request will not be made, so 'user' string is entered
   const { data } = useSWR('user', () => {
@@ -45,9 +45,6 @@ const DrawerBase: React.FC<Props> = (props) => {
               <div className="truncate text-xs">{email}</div>
             )}
             <div className="grow" />
-            <Link to="/stats" title={t('stat.title')}>
-              <PiChartBar className="text-lg" />
-            </Link>
             <Link to={settingUrl}>
               <IconWithDot showDot={hasUpdate}>
                 <PiGear className="text-lg" />

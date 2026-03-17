@@ -268,12 +268,15 @@ const App: React.FC = () => {
           display: 'usecase' as const,
         }
       : null,
-    {
-      label: t('navigation.speechRecognition'),
-      to: '/transcribe',
-      icon: <PiSpeakerHighBold />,
-      display: 'tool' as const,
-    },
+    // 音声認識機能を非表示にするために「enabled」の部分を追加
+    enabled('transcribe')
+      ? {
+          label: t('navigation.speechRecognition'),
+          to: '/transcribe',
+          icon: <PiSpeakerHighBold />,
+          display: 'tool' as const,
+        }
+      : null,
     optimizePromptEnabled
       ? {
           label: t('navigation.promptOptimization'),

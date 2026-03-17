@@ -118,7 +118,7 @@ agent_dashboard: {}
 auth:
   loading: 読み込み中...
   login: ログイン
-  title: Generative AI Use Cases on AWS
+  title: 豊田合成 生成AIポータル
 chat:
   advanced_options: 高度なオプション
   create_link: リンクの作成
@@ -547,7 +547,7 @@ landing:
       content: 映っているものを説明してください。もし映っているものに文字が書かれている場合はそれも読んでください。
     web_content:
       url: https://aws.amazon.com/jp/bedrock/
-  title: ではじめる生成 AI
+  title: 豊田合成 生成AIポータル
   try: 試す
   try_message: をクリックすることで、各ユースケースを体験できます。
   use_cases:

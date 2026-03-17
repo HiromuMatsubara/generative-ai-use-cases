@@ -17,6 +17,9 @@ const UseCaseBuilderDrawer: React.FC<Props> = (props) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // 新しく表示制御用の変数を追加
+  const showBuilderSwitch = false; // ここを false に設定してスイッチを非表示に
+
   const {
     favoriteUseCases,
     isLoadingFavoriteUseCases,
@@ -35,15 +38,20 @@ const UseCaseBuilderDrawer: React.FC<Props> = (props) => {
   return (
     <DrawerBase builderMode>
       <div className="flex-none">
-        <Switch
-          className="mx-3 my-2"
-          label={t('useCaseBuilder.builderMode')}
-          checked
-          onSwitch={() => {
-            navigate('/');
-          }}
-        />
-        <div className="border-b" />
+        {/* ビルダーモードスイッチを条件付きで表示 */}
+        {showBuilderSwitch && (
+          <>
+            <Switch
+              className="mx-3 my-2"
+              label={t('useCaseBuilder.builderMode')}
+              checked
+              onSwitch={() => {
+                navigate('/');
+              }}
+            />
+            <div className="border-b" />
+          </>
+        )}
         <div className="text-aws-smile mx-3 my-1 text-xs">
           {t('useCaseBuilder.mainMenu')}
         </div>

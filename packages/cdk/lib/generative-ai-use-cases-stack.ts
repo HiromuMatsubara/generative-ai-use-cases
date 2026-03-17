@@ -5,8 +5,8 @@ import {
   Api,
   Web,
   Database,
-  Rag,
-  RagKnowledgeBase,
+  //Rag,
+  //RagKnowledgeBase,
   Transcribe,
   CommonWebAcl,
   SpeechToSpeech,
@@ -20,7 +20,7 @@ import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { UseCaseBuilder } from './construct/use-case-builder';
 import { AgentBuilder } from './construct/agent-builder';
 import { ProcessedStackInput } from './stack-input';
-import { allowS3AccessWithSourceIpCondition } from './utils/s3-access-policy';
+//import { allowS3AccessWithSourceIpCondition } from './utils/s3-access-policy';
 import {
   InterfaceVpcEndpoint,
   IVpc,
@@ -66,8 +66,8 @@ export interface GenerativeAiUseCasesStackProps extends StackProps {
 }
 
 export class GenerativeAiUseCasesStack extends Stack {
-  public readonly userPool: cognito.UserPool;
-  public readonly userPoolClient: cognito.UserPoolClient;
+  public readonly userPool: cognito.IUserPool; // UserPool → IUserPool
+  public readonly userPoolClient: cognito.IUserPoolClient; // UserPool → IUserPoolClient
 
   constructor(
     scope: Construct,
@@ -282,6 +282,8 @@ export class GenerativeAiUseCasesStack extends Stack {
       samlCognitoDomainName: params.samlCognitoDomainName,
       samlCognitoFederatedIdentityProviderName:
         params.samlCognitoFederatedIdentityProviderName,
+      sharepointRedirectUrl: params.sharepointRedirectUrl, // 追加
+      cloudfrontHostname: params.cloudfrontHostname, // 追加
       // Backend
       apiEndpointUrl: api.api.url,
       predictStreamFunctionArn: api.predictStreamFunction.functionArn,
@@ -348,8 +350,9 @@ export class GenerativeAiUseCasesStack extends Stack {
       brandingConfig: params.brandingConfig,
     });
 
-    // RAG
+    // RAG 使わないのでコメントアウト
     if (params.ragEnabled) {
+      /*
       const rag = new Rag(this, 'Rag', {
         envSuffix: params.env,
         kendraIndexLanguage: params.kendraIndexLanguage,
@@ -363,7 +366,7 @@ export class GenerativeAiUseCasesStack extends Stack {
         vpc: props.vpc,
         securityGroups,
       });
-
+      
       // Allow downloading files from the File API to the data source Bucket
       // If you are importing existing Kendra, there is a possibility that the data source is not S3
       // In that case, rag.dataSourceBucketName will be undefined and the permission will not be granted
@@ -380,11 +383,13 @@ export class GenerativeAiUseCasesStack extends Stack {
             ipv6: params.allowedIpV6AddressRanges,
           }
         );
-      }
+      }*/
     }
 
-    // RAG Knowledge Base
+
+    // RAG Knowledge Base 使わないのでコメントアウト
     if (params.ragKnowledgeBaseEnabled) {
+      /*
       const knowledgeBaseId =
         params.ragKnowledgeBaseId || props.knowledgeBaseId;
       if (knowledgeBaseId) {
@@ -412,7 +417,7 @@ export class GenerativeAiUseCasesStack extends Stack {
             }
           );
         }
-      }
+      }*/
     }
 
     // UseCaseBuilder - create only if UseCaseBuilder or AgentBuilder is enabled
@@ -463,6 +468,14 @@ export class GenerativeAiUseCasesStack extends Stack {
     new CfnOutput(this, 'WebUrl', {
       value: web.webUrl,
     });
+
+    // CloudFrontドメイン名を出力に追加し、CNAMEレコード作成時に参照できるように
+    if (web.cloudFrontDomainName) {
+      new CfnOutput(this, 'CloudFrontDomainName', {
+        value: web.cloudFrontDomainName,
+        description: 'CloudFront domain name for CNAME record creation in domain management account',
+      });
+    }
 
     new CfnOutput(this, 'ApiEndpoint', {
       value: api.api.url,
@@ -544,6 +557,16 @@ export class GenerativeAiUseCasesStack extends Stack {
       value: params.samlCognitoFederatedIdentityProviderName ?? '',
     });
 
+     // リダイレクトする処理のURLはcdk.jsonに記入したので追加
+    new CfnOutput(this, 'SharepointRedirectUrl', {
+      value: params.sharepointRedirectUrl ?? '',
+    });
+
+     // リダイレクトする処理のURLはcdk.jsonに記入したので追加
+    new CfnOutput(this, 'CloudfrontHostname', {
+      value: params.cloudfrontHostname ?? '',
+    });
+
     new CfnOutput(this, 'Agents', {
       value: Buffer.from(JSON.stringify(api.agents)).toString('base64'),
     });
@@ -620,7 +643,7 @@ export class GenerativeAiUseCasesStack extends Stack {
     this.userPool = auth.userPool;
     this.userPoolClient = auth.client;
 
-    this.exportValue(this.userPool.userPoolId);
-    this.exportValue(this.userPoolClient.userPoolClientId);
+    //this.exportValue(this.userPool.userPoolId);
+    //this.exportValue(this.userPoolClient.userPoolClientId);
   }
 }

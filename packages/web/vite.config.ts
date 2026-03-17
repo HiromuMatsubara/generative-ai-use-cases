@@ -10,7 +10,18 @@ import webfontDownload from 'vite-plugin-webfont-dl';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   build: {
+    // 最適化設定により、メモリ削減
+    sourcemap: false,
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'aws-vendor': ['aws-amplify'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select'],
+        },
+      },
       plugins: [
         mode === 'analyze' &&
           visualizer({

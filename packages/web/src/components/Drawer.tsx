@@ -9,7 +9,7 @@ import DrawerBase from './DrawerBase';
 import Switch from './Switch';
 import Button from './Button';
 import { useTranslation } from 'react-i18next';
-import useUserSetting from '../hooks/useUserSetting';
+//import useUserSetting from '../hooks/useUserSetting';
 
 export type ItemProps = DrawerItemProps & {
   display: 'usecase' | 'tool' | 'none';
@@ -22,7 +22,7 @@ type Props = BaseProps & {
 const Drawer: React.FC<Props> = (props) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { settingShowUseCaseBuilder, settingShowTools } = useUserSetting();
+  //const { settingShowUseCaseBuilder, settingShowTools } = useUserSetting();
 
   const usecases = useMemo(() => {
     return props.items.filter((i) => i.display === 'usecase');
@@ -45,10 +45,13 @@ const Drawer: React.FC<Props> = (props) => {
 
   const [settingVisibility, setSettingVisibility] = useState(false);
 
+  // 新しく表示制御用の変数を追加
+  const showBuilderSwitch: boolean = false; // ここを false にしてスイッチを非表示に
+
   return (
     <>
       <DrawerBase>
-        {useCaseBuilderEnabled && settingShowUseCaseBuilder && (
+        {useCaseBuilderEnabled && showBuilderSwitch/*settingShowUseCaseBuilder*/ && (
           <>
             <Switch
               className="mx-3 my-2"
@@ -99,7 +102,7 @@ const Drawer: React.FC<Props> = (props) => {
           )}
         </div>
         <div className="border-b" />
-        {tools.length > 0 && settingShowTools && (
+        {tools.length > 0 && /*settingShowTools &&*/ (
           <>
             <ExpandableMenu
               title={t('drawer.tools')}

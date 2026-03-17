@@ -13,6 +13,11 @@ const baseStackInputSchema = z.object({
   samlAuthEnabled: z.boolean().default(false),
   samlCognitoDomainName: z.string().nullish(),
   samlCognitoFederatedIdentityProviderName: z.string().nullish(),
+  sharepointRedirectUrl: z.string().nullish(), // リダイレクトする処理のURLはcdk.jsonに記入したので追加
+  cloudfrontHostname: z.string().nullish(), // リダイレクトする処理のURLはcdk.jsonに記入したので追加
+  cognitoUserPoolId: z.string().nullish(), // 追加
+  cognitoAppClientId: z.string().nullish(), // 追加
+  cognitoIdpoolName: z.string().nullish(), // 追加
   // Frontend
   hiddenUseCases: z
     .object({
@@ -27,6 +32,7 @@ const baseStackInputSchema = z.object({
       diagram: z.boolean().optional(),
       meetingMinutes: z.boolean().optional(),
       voiceChat: z.boolean().optional(),
+      transcribe: z.boolean().optional(), // 音声認識機能を非表示にするために追加
     })
     .default({}),
   // API
@@ -191,6 +197,7 @@ const baseStackInputSchema = z.object({
   hostName: z.string().nullish(),
   domainName: z.string().nullish(),
   hostedZoneId: z.string().nullish(),
+  certificateArn: z.string().nullish(), // 追加
   // Dashboard
   dashboard: z.boolean().default(false),
   // Tag

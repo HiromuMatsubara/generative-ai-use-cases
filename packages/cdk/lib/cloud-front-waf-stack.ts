@@ -43,19 +43,29 @@ export class CloudFrontWafStack extends Stack {
     }
 
     if (params.hostName && params.domainName && params.hostedZoneId) {
-      const hostedZone = HostedZone.fromHostedZoneAttributes(
-        this,
-        'HostedZone',
-        {
-          hostedZoneId: params.hostedZoneId,
-          zoneName: params.domainName,
-        }
-      );
-      const cert = new Certificate(this, 'Cert', {
-        domainName: `${params.hostName}.${params.domainName}`,
-        validation: CertificateValidation.fromDns(hostedZone),
-      });
-      this.cert = cert;
+      // 既存の証明書を参照する
+      if (params.certificateArn) {
+        this.cert = Certificate.fromCertificateArn(
+          this,
+          'Cert',
+          params.certificateArn
+        );
+      } else {
+        // Create new certificate with DNS validation
+        const hostedZone = HostedZone.fromHostedZoneAttributes(
+          this,
+          'HostedZone',
+          {
+            hostedZoneId: params.hostedZoneId,
+            zoneName: params.domainName,
+          }
+        );
+        const cert = new Certificate(this, 'Cert', {
+          domainName: `${params.hostName}.${params.domainName}`,
+          validation: CertificateValidation.fromDns(hostedZone),
+        });
+        this.cert = cert;
+      }
     }
   }
 }

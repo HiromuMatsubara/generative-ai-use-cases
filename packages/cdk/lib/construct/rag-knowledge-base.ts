@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito'; // 修正
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
@@ -19,7 +19,7 @@ export interface RagKnowledgeBaseProps {
 
   // Resource
   readonly knowledgeBaseId: string;
-  readonly userPool: UserPool;
+  readonly userPool: IUserPool; // 修正
   readonly api: RestApi;
 
   // Closed network

@@ -10,14 +10,14 @@ import {
   NodejsFunctionProps,
 } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Duration } from 'aws-cdk-lib';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool } from 'aws-cdk-lib/aws-cognito'; // 修正
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { LAMBDA_RUNTIME_NODEJS } from '../../consts';
 import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 export interface AgentBuilderProps {
-  readonly userPool: UserPool;
+  readonly userPool: IUserPool; // 修正
   readonly api: RestApi;
   readonly vpc?: IVpc;
   readonly securityGroups?: ISecurityGroup[];

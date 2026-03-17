@@ -12,6 +12,12 @@ const samlCognitoFederatedIdentityProviderName: string = import.meta.env
 const speechToSpeechEventApiEndpoint: string = import.meta.env
   .VITE_APP_SPEECH_TO_SPEECH_EVENT_API_ENDPOINT;
 
+ // リダイレクトする処理のURLはcdk.jsonに記入したので追加 
+const sharepointRedirectUrl: string = import.meta.env
+  .VITE_APP_SHAREPOINT_REDIRECT_URL;
+const cloudfrontHostname: string = import.meta.env
+  .VITE_APP_CLOUDFRONT_HOSTNAME;
+
 type Props = {
   children: React.ReactNode;
 };
@@ -31,6 +37,15 @@ const AuthWithSAML: React.FC<Props> = (props) => {
     } else if (authStatus === 'authenticated') {
       setLoading(false);
       setAuthenticated(true);
+
+      // 修正: CloudFrontのルートURLにアクセスした場合のみリダイレクト
+      // ホスト名が一致し、かつパスが空または "/" のみの場合にリダイレクト
+       // リダイレクトする処理のURLはcdk.jsonに記入したので、変数名変更
+      if (window.location.hostname === cloudfrontHostname && 
+          (window.location.pathname === '/' || window.location.pathname === '' || window.location.pathname === '/chat' || window.location.pathname === '/chat/')) {
+        window.location.href = sharepointRedirectUrl;
+        return;
+      }
     } else {
       setLoading(false);
       setAuthenticated(false);

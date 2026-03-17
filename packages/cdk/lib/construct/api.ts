@@ -8,7 +8,7 @@ import {
   ResponseType,
   EndpointType,
 } from 'aws-cdk-lib/aws-apigateway';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito'; //IUserPool, IUserPoolClientに変更
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -58,9 +58,9 @@ export interface BackendApiProps {
   readonly additionalS3Buckets?: Bucket[];
 
   // Resource
-  readonly userPool: UserPool;
+  readonly userPool: IUserPool; //UserPool → IUserPool
   readonly idPool: IdentityPool;
-  readonly userPoolClient: UserPoolClient;
+  readonly userPoolClient: IUserPoolClient; //UserPoolClient → IUserPoolClient
   readonly table: Table;
   readonly statsTable: Table;
   readonly knowledgeBaseId?: string;

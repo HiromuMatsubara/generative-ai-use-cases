@@ -15,22 +15,103 @@ const getContext = (app: cdk.App): StackInput => {
 
 // If you want to define parameters directly
 const envs: Record<string, Partial<StackInput>> = {
-  // If you want to define an anonymous environment, uncomment the following and the content of cdk.json will be ignored.
-  // If you want to define an anonymous environment in parameter.ts, uncomment the following and the content of cdk.json will be ignored.
-  // '': {
-  //   // Parameters for anonymous environment
-  //   // If you want to override the default settings, add the following
-  // },
-  dev: {
-    // Parameters for development environment
+  // 開発環境の設定
+  Dev: {
+    env: 'Dev',
+    tagKey: null,
+    tagValue: null,
+    ragEnabled: false,
+    kendraIndexArn: null,
+    kendraIndexLanguage: 'ja',
+    kendraDataSourceBucketName: null,
+    kendraIndexScheduleEnabled: false,
+    kendraIndexScheduleCreateCron: null,
+    kendraIndexScheduleDeleteCron: null,
+    ragKnowledgeBaseEnabled: false,
+    ragKnowledgeBaseId: null,
+    ragKnowledgeBaseStandbyReplicas: false,
+    ragKnowledgeBaseAdvancedParsing: false,
+    ragKnowledgeBaseAdvancedParsingModelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
+    ragKnowledgeBaseBinaryVector: false,
+    embeddingModelId: 'amazon.titan-embed-text-v2:0',
+    rerankingModelId: null,
+    queryDecompositionEnabled: false,
+    selfSignUpEnabled: false,
+    allowedSignUpEmailDomains: ['toyoda-gosei.co.jp', 'ts.toyoda-gosei.co.jp', 'tgtc.toyoda-gosei.co.jp'],
+    samlAuthEnabled: true,
+    samlCognitoDomainName: 'tgrag-sandbox.auth.ap-northeast-1.amazoncognito.com',
+    samlCognitoFederatedIdentityProviderName: 'TGADSSO-GenU-Sandbox',
+    sharepointRedirectUrl: 'https://toyodagoseicorp.sharepoint.com/sites/TG-AI',
+    cloudfrontHostname: 'dev-use-case.toyoda-gosei.cloud',
+    hiddenUseCases: {
+      generate: true,
+      summarize: true,
+      writer: true,
+      translate: true,
+      webContent: true,
+      image: true,
+      video: true,
+      videoAnalyzer: true,
+      diagram: true,
+      meetingMinutes: true,
+      transcribe: true,
+    },
+    modelRegion: 'us-east-1',
+    modelIds: [
+      'global.anthropic.claude-sonnet-4-6',
+      "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+      'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
+      'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
+      'us.anthropic.claude-3-5-haiku-20241022-v1:0',
+    ],
+    imageGenerationModelIds: [],
+    videoGenerationModelIds: [],
+    speechToSpeechModelIds: [],
+    endpointNames: [],
+    agentEnabled: false,
+    searchAgentEnabled: false,
+    searchEngine: 'Brave',
+    searchApiKey: '',
+    agents: [],
+    inlineAgents: false,
+    mcpEnabled: false,
+    flows: [],
+    agentBuilderEnabled: false,
+    createGenericAgentCoreRuntime: false,
+    agentCoreRegion: null,
+    agentCoreExternalRuntimes: [],
+    agentCoreGatewayArns: [],
+    researchAgentEnabled: false,
+    researchAgentBraveApiKey: '',
+    researchAgentTavilyApiKey: '',
+    allowedIpV4AddressRanges: null,
+    allowedIpV6AddressRanges: null,
+    allowedCountryCodes: ['JP'],
+    hostName: 'dev-use-case',
+    domainName: 'toyoda-gosei.cloud',
+    hostedZoneId: 'Z06981541W689JS4J4YWU',
+    certificateArn: 'arn:aws:acm:us-east-1:014852200397:certificate/cb5c3877-3483-4b18-b54c-ac1e90100a4c',
+    dashboard: false,
+    anonymousUsageTracking: true,
+    guardrailEnabled: false,
+    crossAccountBedrockRoleArn: '',
+    useCaseBuilderEnabled: true,
+    cognitoUserPoolId: 'ap-northeast-1_r9Mnl9MNP',
+    cognitoAppClientId: 'b63dqdlb5oi3prbc0bh4ik10v',
+    cognitoIdpoolName: 'AuthIdentityPool659E7F64_6UVbZ91LcCLi',
+    closedNetworkMode: false,
+    closedNetworkVpcIpv4Cidr: '10.0.0.0/16',
+    closedNetworkVpcId: null,
+    closedNetworkSubnetIds: null,
+    closedNetworkCertificateArn: null,
+    closedNetworkDomainName: null,
+    closedNetworkCreateTestEnvironment: true,
+    closedNetworkCreateResolverEndpoint: true,
   },
-  staging: {
-    // Parameters for staging environment
+  // 本番環境の設定（必要に応じて設定してください）
+  Prod: {
+    // 本番環境用のパラメータをここに追加
   },
-  prod: {
-    // Parameters for production environment
-  },
-  // If you need other environments, customize them as needed
 };
 
 // For backward compatibility, get parameters from CDK Context > parameter.ts

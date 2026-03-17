@@ -1,10 +1,10 @@
 import useVersion from '../hooks/useVersion';
-import useUserSetting from '../hooks/useUserSetting';
+// import useUserSetting from '../hooks/useUserSetting'; // 使わないのでコメントアウト (コミット時にエラーのため)
 import { Link } from 'react-router-dom';
 import Help from '../components/Help';
 import Alert from '../components/Alert';
 import Button from '../components/Button';
-import Switch from '../components/Switch';
+// import Switch from '../components/Switch'; // 使わないのでコメントアウト (コミット時にエラーのため)
 import { MODELS } from '../hooks/useModel';
 import useGitHub, { PullRequest } from '../hooks/useGitHub';
 import { PiGithubLogoFill, PiArrowSquareOut } from 'react-icons/pi';
@@ -60,18 +60,19 @@ const Setting = () => {
   const localVersion = getLocalVersion();
   const hasUpdate = getHasUpdate();
   const closedPullRequests = getClosedPullRequests();
-  const {
-    settingSubmitCmdOrCtrlEnter,
-    setSettingSubmitCmdOrCtrlEnter,
-    settingTypingAnimation,
-    setSettingTypingAnimation,
-    settingShowUseCaseBuilder,
-    setSettingShowUseCaseBuilder,
-    settingShowTools,
-    setSettingShowTools,
-    settingShowEmail,
-    setSettingShowEmail,
-  } = useUserSetting();
+  
+   /*const {
+     settingSubmitCmdOrCtrlEnter,
+     setSettingSubmitCmdOrCtrlEnter,
+     settingTypingAnimation,
+     setSettingTypingAnimation,
+     settingShowUseCaseBuilder,
+     setSettingShowUseCaseBuilder,
+     settingShowTools,
+     setSettingShowTools,
+     settingShowEmail,
+     setSettingShowEmail,
+  } = useUserSetting();*/
 
   const onClickSignout = useCallback(() => {
     // Delete all SWR cache
@@ -132,7 +133,8 @@ const Setting = () => {
           top={true}
         />
 
-        <SettingItem
+        {/* Enterで改行 - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.line_break_enter')}
           value={
             <Switch
@@ -140,9 +142,10 @@ const Setting = () => {
               label=""
               onSwitch={setSettingSubmitCmdOrCtrlEnter}
             />
-          }></SettingItem>
+          }></SettingItem> */}
 
-        <SettingItem
+        {/* タイピングアニメーション - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.typing_animation')}
           value={
             <Switch
@@ -150,9 +153,10 @@ const Setting = () => {
               label=""
               onSwitch={setSettingTypingAnimation}
             />
-          }></SettingItem>
+          }></SettingItem> */}
 
-        <SettingItem
+        {/* ユースケースビルダーの表示 - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.show_use_case_builder')}
           value={
             <Switch
@@ -160,9 +164,10 @@ const Setting = () => {
               label=""
               onSwitch={setSettingShowUseCaseBuilder}
             />
-          }></SettingItem>
+          }></SettingItem> */}
 
-        <SettingItem
+        {/* ツールの表示 - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.show_tools')}
           value={
             <Switch
@@ -170,9 +175,10 @@ const Setting = () => {
               label=""
               onSwitch={setSettingShowTools}
             />
-          }></SettingItem>
+          }></SettingItem> */}
 
-        <SettingItem
+        {/* メールアドレスの表示 - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.show_email')}
           value={
             <Switch
@@ -180,9 +186,10 @@ const Setting = () => {
               label=""
               onSwitch={setSettingShowEmail}
             />
-          }></SettingItem>
+          }></SettingItem> */}
 
-        <SettingItem
+        {/* すべての会話履歴の削除 - 非表示 */}
+        {/* <SettingItem
           name={t('setting.items.delete_all_chats')}
           value={
             <Button
@@ -190,7 +197,7 @@ const Setting = () => {
               className="bg-red-500 text-white">
               {t('setting.items.delete_all_chats_button')}
             </Button>
-          }></SettingItem>
+          }></SettingItem> */}
 
         <SettingItem
           name={t('setting.items.login_status')}

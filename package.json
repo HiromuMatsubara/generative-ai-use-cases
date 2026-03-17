@@ -10,6 +10,7 @@
     "web:devww": "powershell ./web_devw_win.ps1",
     "web:dev": "VITE_APP_VERSION=${npm_package_version} npm -w packages/web run dev",
     "web:build": "VITE_APP_VERSION=${npm_package_version} npm -w packages/web run build --",
+    "web:build:check": "VITE_APP_VERSION=${npm_package_version} npm -w packages/web run build:check --",
     "web:build:analyze": "VITE_APP_VERSION=${npm_package_version} npm -w packages/web run build -- --mode analyze",
     "web:lint": "npm -w packages/web run lint",
     "web:lint:fix": "npm -w packages/web run lint:fix",
