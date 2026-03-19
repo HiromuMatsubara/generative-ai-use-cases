@@ -5,7 +5,7 @@ import {
   LambdaIntegration,
   RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
-import { IUserPool } from 'aws-cdk-lib/aws-cognito'; //UserPool → IUserPool
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { IdentityPool } from 'aws-cdk-lib/aws-cognito-identitypool';
 import { Effect, Policy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -21,7 +21,7 @@ import { LAMBDA_RUNTIME_NODEJS } from '../../consts';
 import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 
 export interface TranscribeProps {
-  readonly userPool: IUserPool; //UserPool → IUserPool
+  readonly userPool: UserPool;
   readonly idPool: IdentityPool;
   readonly api: RestApi;
   readonly allowedIpV4AddressRanges?: string[] | null;

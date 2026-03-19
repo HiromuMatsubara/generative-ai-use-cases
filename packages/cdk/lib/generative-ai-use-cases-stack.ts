@@ -5,8 +5,8 @@ import {
   Api,
   Web,
   Database,
-  //Rag,
-  //RagKnowledgeBase,
+  Rag,
+  RagKnowledgeBase,
   Transcribe,
   CommonWebAcl,
   SpeechToSpeech,
@@ -20,7 +20,7 @@ import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { UseCaseBuilder } from './construct/use-case-builder';
 import { AgentBuilder } from './construct/agent-builder';
 import { ProcessedStackInput } from './stack-input';
-//import { allowS3AccessWithSourceIpCondition } from './utils/s3-access-policy';
+import { allowS3AccessWithSourceIpCondition } from './utils/s3-access-policy';
 import {
   InterfaceVpcEndpoint,
   IVpc,
@@ -66,8 +66,8 @@ export interface GenerativeAiUseCasesStackProps extends StackProps {
 }
 
 export class GenerativeAiUseCasesStack extends Stack {
-  public readonly userPool: cognito.IUserPool; // UserPool → IUserPool
-  public readonly userPoolClient: cognito.IUserPoolClient; // UserPool → IUserPoolClient
+  public readonly userPool: cognito.UserPool;
+  public readonly userPoolClient: cognito.UserPoolClient;
 
   constructor(
     scope: Construct,
@@ -350,9 +350,8 @@ export class GenerativeAiUseCasesStack extends Stack {
       brandingConfig: params.brandingConfig,
     });
 
-    // RAG 使わないのでコメントアウト
     if (params.ragEnabled) {
-      /*
+
       const rag = new Rag(this, 'Rag', {
         envSuffix: params.env,
         kendraIndexLanguage: params.kendraIndexLanguage,
@@ -383,13 +382,12 @@ export class GenerativeAiUseCasesStack extends Stack {
             ipv6: params.allowedIpV6AddressRanges,
           }
         );
-      }*/
+      }
     }
 
 
-    // RAG Knowledge Base 使わないのでコメントアウト
+    // RAG Knowledge Base
     if (params.ragKnowledgeBaseEnabled) {
-      /*
       const knowledgeBaseId =
         params.ragKnowledgeBaseId || props.knowledgeBaseId;
       if (knowledgeBaseId) {
@@ -417,7 +415,7 @@ export class GenerativeAiUseCasesStack extends Stack {
             }
           );
         }
-      }*/
+      }
     }
 
     // UseCaseBuilder - create only if UseCaseBuilder or AgentBuilder is enabled
@@ -643,7 +641,7 @@ export class GenerativeAiUseCasesStack extends Stack {
     this.userPool = auth.userPool;
     this.userPoolClient = auth.client;
 
-    //this.exportValue(this.userPool.userPoolId);
-    //this.exportValue(this.userPoolClient.userPoolClientId);
+    this.exportValue(this.userPool.userPoolId);
+    this.exportValue(this.userPoolClient.userPoolClientId);
   }
 }

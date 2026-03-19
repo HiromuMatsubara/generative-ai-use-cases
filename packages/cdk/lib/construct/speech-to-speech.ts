@@ -12,7 +12,7 @@ import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 
 export interface SpeechToSpeechProps {
   readonly envSuffix: string;
-  readonly userPool: cognito.IUserPool; // 修正
+  readonly userPool: cognito.UserPool;
   readonly api: agw.RestApi;
   readonly speechToSpeechModelIds: ModelConfiguration[];
   readonly crossAccountBedrockRoleArn?: string | null;
